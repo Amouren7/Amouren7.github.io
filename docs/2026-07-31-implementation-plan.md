@@ -19,15 +19,15 @@
   - `ScrollFade`（fade-up+blur 入场）
   - `AnimatedText`（逐字浮现）
   - `Marquee`（双行反向滚动）
-  - `CompassWheel`（天干地支罗盘）
-  - `StickyCards`（项目叠卡）
-  - `FireflyGlow`（夜区块绿光脉冲）
+  - `CompassWheel`（天干地支罗盘，已升级 3D 版）
+  - `CardTheater`（项目卡片剧场，替代早期计划的 StickyCards）
+  - `FireflyCanvas`（夜区块萤火粒子场，替代早期计划的 FireflyGlow）
   - `NavPill`（滚动加深）
 - `BaseLayout`（head/字体/全局）
 
 ### Phase 2 — 首页七区块（Frontend Developer #2）
 - Hero（眉题/大字/印章/罗盘/tagline/CTA）
-- 跑马灯 / 关于（逐字+LV徽章）/ 技能夜区块 / 项目叠卡 / 页脚
+- 跑马灯 / 关于（逐字+LV徽章）/ 技能夜区块 / 项目卡片剧场 / 页脚
 - 严格按设计文档 3.1 + 动效清单 5
 
 ### Phase 3 — 内页 + 内容 + 搜索/RSS（Frontend Developer #3）

@@ -33,7 +33,7 @@ src/
 │  ├─ projects/                # 项目详情页（简历式介绍）
 │  └─ config.ts                # 内容 schema
 ├─ components/
-│  ├─ motion/                  # 动效组件（罗盘/磁吸/跑马灯/叠卡/导航）
+│  ├─ motion/                  # 动效组件（罗盘3D/磁吸/跑马灯/卡片剧场/萤火粒子/导航）
 │  └─ ui/                      # 基础组件（眉题/印章/卡片/页脚/搜索）
 ├─ layouts/                    # Base / Page / Article 布局
 ├─ pages/                      # 首页 / 栏目 / 文章 / 项目 / 关于 / 404 / RSS
