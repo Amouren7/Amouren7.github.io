@@ -12,7 +12,7 @@
 「A某人」是姜高辉的个人品牌博客，定位为 **个人品牌 + 求职作品集 混合**：既面向读者/粉丝展示多面内容（AI 技术、玄学命理、生活游戏），又能作为求职作品集呈现给雇主。
 
 **品牌签名元素**（全站差异化符号）：
-- 天干地支罗盘（四柱八字：甲申 丙寅 己巳 甲子）
+- 天干地支罗盘（四柱八字排盘）
 - 朱砂印章落款「某人」
 - 萤火绿 + 墨色的「昼与夜」色彩概念
 - 大字 Kanit 标题 + 中文宋体标题
@@ -165,7 +165,8 @@ personal-blog/
 
 ### 6.4 部署
 - GitHub Actions：`push` → `npm ci && npm run build && pagefind` → 部署到 `gh-pages`
-- 仓库名 `a-mouren.github.io`（或任意名 + workflow 部署 Pages）
+- 实际仓库：`Amouren7/Amouren7.github.io`（用户 GitHub 账号 Amouren7），线上 **https://Amouren7.github.io/**，Pages 构建源 = GitHub Actions
+- 站点 URL 已适配账号名 Amouren7（原设计假设的 a-mouren.github.io 因账号不叫 a-mouren 而不适用）
 - 无自定义域名（本期），后续可加
 
 ---
