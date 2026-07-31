@@ -6,7 +6,7 @@ export const SITE = {
   enName: 'A-Ren',
   title: 'A某人 · 个人博客',
   description: '一个 AI 工程师的自我修养：代码、命理与人间。',
-  url: 'https://a-mouren.github.io',
+  url: 'https://Amouren7.github.io',
   lang: 'zh-CN',
   tagline: '白天写代码 · 晚上排命盘',
   heroTagline: 'an ai engineer driven by code, astrology & games',
