@@ -13,6 +13,7 @@ import '@fontsource/kanit/latin-700.css';
 import '@fontsource/kanit/latin-800.css';
 import '@fontsource/kanit/latin-900.css';
 import '../styles/global.css';
+import SearchModal from '../components/ui/SearchModal.tsx';
 
 interface Props {
   title?: string;
@@ -47,5 +48,6 @@ const {
     </noscript>
     <div class="grain" aria-hidden="true" />
     <slot />
+    <SearchModal client:load />
   </body>
 </html>

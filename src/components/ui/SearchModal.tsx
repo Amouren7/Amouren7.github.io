@@ -24,42 +24,62 @@ export default function SearchModal() {
   const booted = useRef(false);
   const uiRef = useRef<{ destroy: () => void } | null>(null);
 
-  const boot = useCallback(async () => {
-    // 1. 注入 Pagefind UI 样式
-    if (!document.querySelector('link[href="/pagefind/pagefind-ui.css"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = '/pagefind/pagefind-ui.css';
-      document.head.appendChild(link);
-    }
-    // 2. 探测 /pagefind/pagefind.js 索引是否已构建（开发环境不存在 → 抛错 → 降级）
-    //    用变量 specifier 阻止 Rollup 静态解析（路径为运行时资源）
-    const pagefindUrl = '/pagefind/pagefind.js';
-    const uiUrl = '/pagefind/pagefind-ui.js';
-    await import(/* @vite-ignore */ pagefindUrl);
-    // 3. 懒加载 UI 并初始化
-    const mod = (await import(/* @vite-ignore */ uiUrl)) as {
-      PagefindUI?: new (opts: PagefindUIOptions) => unknown;
-    };
-    if (!mod.PagefindUI) throw new Error('pagefind-ui 模块缺少 PagefindUI 导出');
-    uiRef.current = new mod.PagefindUI({
-      element: '#search-modal',
-      bundlePath: '/pagefind/',
-      showSubResults: true,
-      showImages: false,
-    }) as unknown as { destroy: () => void };
-    setStatus('ready');
-  }, []);
+  const boot = useCallback(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        // 1. 注入 Pagefind UI 样式
+        if (!document.querySelector('link[href="/pagefind/pagefind-ui.css"]')) {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = '/pagefind/pagefind-ui.css';
+          document.head.appendChild(link);
+        }
+        // 2. 以「经典脚本」方式加载 pagefind-ui.js（该脚本把 PagefindUI 挂到 window，
+        //    不能用动态 import()——经典脚本不会有模块导出）
+        const apply = () => {
+          const UI = (window as unknown as {
+            PagefindUI?: new (opts: PagefindUIOptions) => unknown;
+          }).PagefindUI;
+          if (!UI) {
+            reject(new Error('PagefindUI 全局对象未加载'));
+            return;
+          }
+          uiRef.current = new UI({
+            element: '#search-modal',
+            bundlePath: '/pagefind/',
+            showSubResults: true,
+            showImages: false,
+          }) as unknown as { destroy: () => void };
+          resolve();
+        };
+        const existing = document.querySelector(
+          'script[src="/pagefind/pagefind-ui.js"]'
+        );
+        if (existing) {
+          apply();
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = '/pagefind/pagefind-ui.js';
+        script.async = true;
+        script.onload = apply;
+        script.onerror = () => reject(new Error('pagefind-ui.js 加载失败'));
+        document.head.appendChild(script);
+      }),
+    []
+  );
 
   // 打开时启动懒加载（仅一次）
   useEffect(() => {
     if (!open || booted.current || status !== 'idle') return;
     booted.current = true;
     setStatus('loading');
-    boot().catch((err) => {
-      console.warn('[Search] Pagefind 索引未构建，显示降级提示。', err);
-      setStatus('fallback');
-    });
+    boot()
+      .then(() => setStatus('ready'))
+      .catch((err) => {
+        console.warn('[Search] Pagefind 索引未构建，显示降级提示。', err);
+        setStatus('fallback');
+      });
   }, [open, status, boot]);
 
   // 就绪后聚焦搜索输入框

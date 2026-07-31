@@ -11,7 +11,7 @@ export const SITE = {
   tagline: '白天写代码 · 晚上排命盘',
   heroTagline: 'an ai engineer driven by code, astrology & games',
   author: '姜高辉',
-  email: 'a-mouren@example.com',
+  email: '3384989556@qq.com',
   heroEyebrow: 'Portfolio · 2026',
 };
 
