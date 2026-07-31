@@ -7,7 +7,7 @@
 打开终端（Git Bash），依次执行：
 
 ```bash
-cd D:/Backup/Desktop/personal-blog
+cd D:/CC project/personal-blog
 
 # 写完内容后，三步发布：
 git add -A

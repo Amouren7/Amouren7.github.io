@@ -3,7 +3,7 @@
 - **日期**: 2026-07-31
 - **状态**: 已批准（用户审阅通过）
 - **技术栈**: Astro + React islands (Framer Motion) + Tailwind CSS
-- **项目路径**: `D:\Backup\Desktop\personal-blog`
+- **项目路径**: `D:\CC project\personal-blog`
 
 ---
 

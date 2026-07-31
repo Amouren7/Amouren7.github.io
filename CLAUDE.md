@@ -7,7 +7,7 @@
 - **Pagefind**（全站搜索，`npm run build` 后生成索引）+ `@astrojs/rss`
 - 动效纪律：只用 `transform/opacity`，自定义 cubic-bezier（`.32,.72,0,1`），禁用 `window scroll` 监听
 
-## 常用命令（仓库根 `D:\Backup\Desktop\personal-blog`）
+## 常用命令（仓库根 `D:\CC project\personal-blog`）
 ```bash
 npm run dev        # 本地开发（localhost:4321）
 npm run build      # 构建 + Pagefind 索引

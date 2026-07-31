@@ -17,5 +17,8 @@ pnpm-debug.log*
 # macOS
 .DS_Store
 
+# design exploration (3D 原型探索，不进公开仓库)
+design-explore/
+
 # brainstorm visual companion
 .superpowers/
