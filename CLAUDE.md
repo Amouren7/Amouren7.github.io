@@ -21,7 +21,7 @@ npm run preview    # 预览构建产物
 
 ## 内容在哪
 - 博客文章：`src/content/blog/{ai,mignli,life}/*.md`（frontmatter: `title/description/pubDate/category/tags/draft`）
-- 项目详情：`src/content/projects/*.md`（首页叠卡与关于页自动读取）
+- 项目详情：`src/content/projects/*.md`（首页卡片剧场与关于页自动读取）
 - 站点资料：`src/config.ts`（`SITE` / `TOOLCHAIN_GROUPS` / `SKILLS`）
 - 内容 schema：`src/content/config.ts`；内容模板：`docs/content-guide.md`
 

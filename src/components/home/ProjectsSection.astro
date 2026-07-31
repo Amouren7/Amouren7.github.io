@@ -2,12 +2,12 @@
 /**
  * ProjectsSection — 首页第 6 区块「项目」（id="projects"）
  * 浅纸背景圆角上拉（margin-top -26px 覆盖夜区块边缘）。
- * eyebrow「Works」→ 大字「项目」→ StickyCards（缩放叠卡）。
+ * eyebrow「Works」→ 大字「项目」→ CardTheater（3D 卡片扇面剧场）。
  * 数据来自 content/projects 内容集合（按 num 排序，链到 /projects/[slug] 详情页）。
  */
 import { getCollection } from 'astro:content';
 import ScrollFade from '../motion/ScrollFade';
-import StickyCards from '../motion/StickyCards';
+import CardTheater from '../motion/CardTheater';
 import Eyebrow from '../ui/Eyebrow.astro';
 
 const projects = (
@@ -35,7 +35,7 @@ const projects = (
       <h2 class="sec-title gtext">项目</h2>
     </ScrollFade>
   </div>
-  <StickyCards client:visible cards={projects} />
+  <CardTheater client:visible cards={projects} />
 </section>
 
 <style>
@@ -63,8 +63,8 @@ const projects = (
     letter-spacing: -0.02em;
   }
 
-  :global(.projects .sc-wrap) {
-    margin-top: 30px;
+  :global(.projects .ct-wrap) {
+    margin-top: 10px;
   }
 
   @media (max-width: 640px) {

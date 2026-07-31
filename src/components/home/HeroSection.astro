@@ -12,10 +12,12 @@ import MagneticButton from '../motion/MagneticButton';
 import Eyebrow from '../ui/Eyebrow.astro';
 import Seal from '../ui/Seal.astro';
 import Particles from './Particles.astro';
+import FireflyCanvas from '../motion/FireflyCanvas';
 import { SITE } from '../../config';
 ---
 
 <section class="hero">
+  <FireflyCanvas client:load tone="paper" />
   <Particles />
   <ScrollFade client:load className="hero-head" y={40} delay={0}>
     <Eyebrow text={SITE.heroEyebrow} />

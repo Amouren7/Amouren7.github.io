@@ -1,7 +1,7 @@
 /* ============================================================
    A某人 设计系统 · motion 组件共享样式
    （MagneticButton / ScrollFade / AnimatedText / Marquee /
-     CompassWheel / StickyCards / NavPill）
+     CompassWheel / CardTheater / FireflyCanvas / NavPill）
    说明：项目 Tailwind 未启用 utility 生成（applyBaseStyles:false
    且 global.css 无 @tailwind 指令），故组件布局样式在此集中定义，
    动画一律只用 transform / opacity（filter 仅入场 blur）。
@@ -113,16 +113,30 @@
 .mq-tile .core.mq-t5 { background: linear-gradient(135deg, #f3ded6, #f7efe9); }
 .mq-tile .core.mq-t6 { background: linear-gradient(135deg, #dfece2, #f1f4ed); }
 
-/* ---------- CompassWheel ---------- */
+/* ---------- CompassWheel (3D) ---------- */
 .wheel {
   position: relative;
   border-radius: 50%;
+  perspective: 900px;
   background: radial-gradient(circle at 50% 50%, rgba(188, 240, 27, 0.1), transparent 62%);
   box-shadow:
     0 0 0 1px rgba(27, 25, 18, 0.09),
     0 0 0 46px rgba(27, 25, 18, 0.02),
     0 30px 70px -30px rgba(27, 25, 18, 0.35),
     inset 0 0 50px rgba(255, 255, 255, 0.6);
+}
+/* 3D 倾斜载体：preserve-3d 让各环在不同 Z 深度 */
+.wheel-tilt {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.cw-z {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
 }
 .cw-ring-static {
   position: absolute;
@@ -154,7 +168,8 @@
   font-size: 15px;
   font-weight: 600;
   color: #33302a;
-  transform: translate(-50%, -50%);
+  backface-visibility: visible;
+  pointer-events: none;
 }
 .cw-gua {
   position: absolute;
@@ -165,7 +180,7 @@
   justify-content: center;
   font-size: 12px;
   color: #c0a45e; /* 淡金 */
-  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 .cw-glow {
   position: absolute;
@@ -188,7 +203,6 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,237 +265,236 @@
   }
 }
 
-/* ---------- StickyCards ---------- */
-.sc-wrap {
-  padding: 40px 16px 80px;
-  position: relative;
-}
-.sc-card {
-  position: sticky;
-  top: 6rem; /* top-24 */
-  min-height: 85vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.sc-inner {
-  width: 100%;
-  max-width: 1000px;
-  will-change: transform;
-}
-.sc-dbz {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 28px 60px -30px rgba(0, 0, 0, 0.7);
-}
-.sc-core {
-  padding: 20px;
-  background: var(--card);
-  color: var(--ink);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  position: relative;
-}
-/* 整卡可点击（stretched link）：覆盖整张卡跳转项目详情页 */
-.sc-coverlink {
+/* ---------- FireflyCanvas ---------- */
+.ffc {
   position: absolute;
   inset: 0;
-  z-index: 2;
-  border-radius: 15px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.skills > .ffc {
+  border-radius: inherit;
+}
+.skills-head,
+.srv-list {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ---------- CardTheater (3D 卡片剧场) ---------- */
+.ct-wrap {
+  padding: 60px 16px 40px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.ct-scene {
+  width: 100%;
+  max-width: 1000px;
+  height: 420px;
+  perspective: 1200px;
+}
+.ct-deck {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+/* 卡片扇面：中心对称、间距均匀(230px)，Z 分层 + 平面微旋(rotateZ 保持文字水平) */
+/* hover 判定元素(.ct-card)保持静止 → 拈起 transform 移到内层 .ct-shell，避免重叠区 hover 闪烁 */
+.ct-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250px;
+  height: 330px;
+  border-radius: 22px;
   text-decoration: none;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
-.sc-core:hover .sc-coverlink {
-  box-shadow: inset 0 0 0 1px rgba(143, 191, 11, 0.35);
+.c1 { margin: -148px 0 0 -470px; transform: translateZ(0px) rotate(-5deg); }
+.c2 { margin: -170px 0 0 -240px; transform: translateZ(46px) rotate(-1.5deg); }
+.c3 { margin: -174px 0 0 -10px;  transform: translateZ(90px) rotate(1.5deg); }
+.c4 { margin: -148px 0 0 220px;  transform: translateZ(46px) rotate(5deg); }
+/* 拈起：内层 .ct-shell 向前 Z + 转正 + 放大（外层 .ct-card 不动，命中区域稳定） */
+.ct-card:hover { z-index: 20; }
+.ct-card:hover .ct-shell {
+  transform: translateZ(180px) rotate(0deg) scale(1.05);
 }
-.sc-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-.sc-num {
-  font-size: clamp(42px, 7vw, 82px);
-  font-weight: 900;
-  font-family: var(--font-kanit);
-  line-height: 0.9;
-  color: rgba(27, 25, 18, 0.13);
-  transition: color 0.6s var(--ease-out), text-shadow 0.6s var(--ease-out);
-}
-.sc-card:hover .sc-num {
-  color: var(--firefly-deep);
-  text-shadow: 0 0 26px rgba(188, 240, 27, 0.5);
-}
-.sc-info {
-  flex: 1;
-}
-.sc-cat {
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  opacity: 0.55;
-}
-.sc-cat b {
-  color: var(--firefly-deep);
-  font-weight: 600;
-}
-.sc-info h4 {
-  font-size: clamp(19px, 2.6vw, 30px);
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-top: 2px;
-  color: var(--ink);
-}
-.sc-desc {
-  margin-top: 16px;
-  max-width: 640px;
-  font-size: clamp(13px, 1.4vw, 16px);
-  font-weight: 300;
-  line-height: 1.7;
-  color: var(--ink-soft);
-}
-.sc-tech {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-.sc-tech span {
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(27, 25, 18, 0.14);
-  background: rgba(27, 25, 18, 0.03);
-  font-family: var(--font-kanit);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--ink);
-}
-.sc-metrics {
-  display: flex;
-  gap: 30px;
-  margin-top: 16px;
-}
-.sc-metric b {
+.ct-shell {
   display: block;
-  font-family: var(--font-kanit);
-  font-size: clamp(18px, 2vw, 24px);
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--firefly-deep);
-}
-.sc-metric span {
-  display: block;
-  margin-top: 3px;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.sc-ghost {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 7px 7px 20px;
-  border-radius: 999px;
-  border: 1px solid rgba(27, 25, 18, 0.22);
-  color: var(--ink);
-  background: transparent;
-  font-family: var(--font-kanit);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.6s var(--ease-out), border-color 0.6s var(--ease-out);
-}
-.sc-ghost[aria-disabled='true'] {
-  cursor: default;
-  opacity: 0.7;
-}
-.sc-ghost:hover {
-  background: rgba(143, 191, 11, 0.14);
-  border-color: rgba(143, 191, 11, 0.5);
-}
-.sc-ghost .sc-arr {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  padding: 7px;
   background: rgba(27, 25, 18, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 24px 50px -28px rgba(27, 25, 18, 0.5);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.7s cubic-bezier(0.32, 0.72, 0, 1), background 0.6s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.ct-card:hover .ct-shell {
+  background: rgba(143, 191, 11, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 34px 70px -26px rgba(27, 25, 18, 0.55);
+}
+.ct-core {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  inset: 7px;
+  border-radius: 16px;
+  padding: 22px 20px;
+  background: var(--card);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  text-align: left;
+  overflow: hidden;
+}
+.ct-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.ct-gua {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.7s var(--ease-out);
+  font-size: 21px;
+  font-weight: 800;
+  background: rgba(188, 240, 27, 0.18);
+  color: var(--firefly-deep);
 }
-.sc-ghost:hover .sc-arr {
-  transform: translate(2px, -2px);
+.ct-num {
+  font-family: var(--font-kanit);
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(27, 25, 18, 0.14);
+  transition: color 0.6s cubic-bezier(0.32, 0.72, 0, 1);
 }
-.sc-imgs {
-  display: grid;
-  grid-template-columns: 1.9fr 3.1fr;
-  gap: 14px;
-  margin-top: 20px;
+.ct-card:hover .ct-num {
+  color: var(--firefly-deep);
 }
-.sc-col {
+.ct-core h3 {
+  margin-top: 14px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.ct-cat {
+  margin-top: 5px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  color: var(--ink);
+}
+.ct-cat b {
+  color: var(--firefly-deep);
+  font-weight: 700;
+}
+.ct-desc {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ct-tech {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
 }
-/* 移动端：取消 sticky 叠层（普通流式堆叠）+ 图片单列（设计文档 §8） */
-@media (max-width: 700px) {
-  .sc-card {
-    position: static !important;
-    height: auto !important;
-    margin-bottom: 18px;
-  }
-  .sc-inner {
-    transform: none !important;
-  }
-  .sc-imgs {
-    grid-template-columns: 1fr;
-  }
-  .sc-col {
-    flex-direction: row;
-  }
-  .sc-col .ph {
-    flex: 1;
-    height: 150px;
-  }
-  .ph.h3 {
-    height: 220px;
-  }
-  .sc-metrics {
-    gap: 22px;
-  }
+.ct-tech > span {
+  font-family: var(--font-kanit);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 25, 18, 0.12);
+  background: rgba(27, 25, 18, 0.03);
+  color: var(--ink);
 }
-/* 渐变占位图（图片就位前） */
-.ph {
-  border-radius: 20px;
+.ct-foot {
+  margin-top: auto;
+  padding-top: 12px;
+  display: flex;
+}
+.ct-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 5px 5px 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 25, 18, 0.2);
+  font-family: var(--font-kanit);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ct-ghost .ct-arr {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(188, 240, 27, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ink-soft);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.7s cubic-bezier(0.32, 0.72, 0, 1);
 }
-.ph.h1 { height: 118px; }
-.ph.h2 { height: 168px; }
-.ph.h3 { height: 300px; }
-.ph.tilt-l { transform: rotate(-1.2deg); }
-.ph.tilt-r { transform: rotate(1deg); }
-.ph.p1a { background: linear-gradient(150deg, #e6f3bc, #f6f1e0); }
-.ph.p1b { background: linear-gradient(150deg, #d7e8f2, #eff3f0); }
-.ph.p1c { background: linear-gradient(150deg, #ead4cc, #f5ebe4); }
-.ph.p2a { background: linear-gradient(150deg, #d9ead6, #f1f4ed); }
-.ph.p2b { background: linear-gradient(150deg, #f1e3bc, #f7f1e2); }
-.ph.p2c { background: linear-gradient(150deg, #dfe0b8, #f2efde); }
-.ph.p3a { background: linear-gradient(150deg, #e8e6f3, #f2f0f6); }
-.ph.p3b { background: linear-gradient(150deg, #f4e8dc, #f6f1e8); }
-.ph.p3c { background: linear-gradient(150deg, #dce8f0, #eef2f2); }
+.ct-card:hover .ct-arr {
+  transform: translate(2px, -2px);
+}
+
+/* 移动端：垂直堆叠，无 3D 扇面 */
+@media (max-width: 700px) {
+  .ct-scene {
+    height: auto;
+    perspective: none;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .ct-deck {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    transform: none !important;
+  }
+  .ct-card {
+    position: static;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 !important;
+    transform: none !important;
+  }
+}
 
 /* ---------- NavPill ---------- */
 .np-wrap {

@@ -49,7 +49,7 @@
 | 3 | 跑马灯 | 双行反向滚动图像带（作品图 + 干支/卦符暗色夜块），非对称尺寸 + 微倾斜 |
 | 4 | 关于我 | 眉题「About」+ 大字标题 + 逐字浮现文案 + Lv 徽章（Lv.22 · ShenZhen · AI Engineer） |
 | 5 | 技能「四艺」 | **墨色夜区块**（圆角上拉）：01 AI应用 / 02 前端设计 / 03 命理推演 / 04 AI视频，萤火绿发光编号 + 五行标签 |
-| 6 | 项目 | sticky 叠卡（缩放层叠）：Firefly 虚拟人(☲火)、RAG 客服Agent(☵水)、JobMate、终南逸士… |
+| 6 | 项目 | 3D 卡片扇面剧场：Firefly 虚拟人(☲火)、RAG 客服Agent(☵水)、JobMate、终南逸士… |
 | 7 | 页脚 | 眉题「白天写代码 · 晚上排命盘」+ 大字 A某人 + 朱砂落款印章 |
 
 ### 3.2 内页
@@ -95,8 +95,10 @@
 2. **按钮内嵌箭头（Button-in-Button）**：文字 + 独立圆形箭头容器，悬停斜移放大
 3. **眉题 pill（Eyebrow）**：`10px / letter-spacing .30em / uppercase`，前置萤火绿发光圆点
 4. **朱砂印章**：方形红印，右上角落款（`right:-0.45em; top:14%`，旋转 7°）
-5. **天干地支罗盘**：320px，十二地支环 + 八卦符号 + 双虚线反向缓转环 + 墨色核心（四柱）
+5. **天干地支罗盘（3D）**：320px，十二地支环 + 八卦符号 + 双虚线反向缓转环 + 墨色核心（太极）；`perspective:900px` + `preserve-3d`，地支/八卦/太极分处不同 Z 深度（46/32/52px），鼠标移动整盘 rotateX/rotateY 弹簧视差
 6. **磁吸 CTA**：萤火绿底 + 墨字 + 内箭头 + 绿色光晕
+7. **萤火粒子场（FireflyCanvas）**：canvas 3D 透视粒子（近大远小、bokeh 景深）；`tone="night"` 140 颗萤火虫（有机游移 + 12% 大光斑）、`tone="paper"` 60 颗纸面光点；`prefers-reduced-motion` 时停动画
+8. **项目卡片剧场（CardTheater）**：3D 扇面——4 卡中心对称、间距 230px、中间两卡 translateZ(46/90px) 前凸 + rotateZ 平面微旋（文字保持水平）；悬停拈起（内层 shell `translateZ(180px)` 转正放大，外层 hover 判定静止防闪烁）；整卡可点击进详情页；移动端垂直堆叠
 
 ---
 
@@ -110,6 +112,7 @@
 - 视口触发动画用 Framer Motion `whileInView`（`viewport={{ once:true }}`），禁止 `window.addEventListener('scroll')`
 - `backdrop-blur` 只用于 fixed/sticky（导航），不用在滚动内容
 - 动效时长基准 500-900ms
+- **3D 效果纪律**：用 `perspective` + `preserve-3d` + `translateZ`/`rotateX`/`rotateY` 做真实深度；悬停拈起的动画只作用在内层元素（hover 判定层保持静止，避免重叠区闪烁）；canvas 粒子只画不碰 DOM 布局
 
 **区块动效清单**
 
@@ -119,9 +122,9 @@
 | 磁吸按钮 | 悬停鼠标跟随 + 内箭头 `translate(3px,-3px) scale(1.06)` + `active:scale(.97)` |
 | 跑马灯 | 随滚动双行反向位移（`(scrollY - sectionTop + innerHeight) * .3`） |
 | 逐字浮现 | 关于段落字符按滚动进度 opacity `0.2 → 1`（offset `['start .8','end .2']`） |
-| 项目叠卡 | sticky `top-24`，滚动缩放 `targetScale = 1 - (n-1-i)*.03` |
-| 罗盘 | 双虚线环反向缓转（46s/30s）+ 中心光晕呼吸 |
-| 萤火夜区块 | 技能编号绿光脉冲（`text-shadow` 呼吸） |
+| 项目卡片剧场 | 3D 扇面 + 悬停拈起（内层 `translateZ(180px)` 转正放大）+ 鼠标整副视差 |
+| 罗盘 | 3D 三层 Z 深度 + 双虚线环反向缓转（46s/30s）+ 中心光晕呼吸 + 鼠标整盘视差 |
+| 萤火夜区块 | 深萤绿径向背景 + canvas 萤火粒子场（有机游移、大光斑 bokeh）+ 编号绿光呼吸 |
 | 干支粒子 | 漂浮上下微移（`drift` 13s） |
 | 导航 | 悬浮 pill，滚动后加深实底 |
 
@@ -138,7 +141,7 @@ personal-blog/
 │  │  ├─ ai/  mingli/  life/   # 三大栏目
 │  │  └─ config.ts             # schema（标题/栏目/标签/日期/摘要/封面）
 │  ├─ components/
-│  │  ├─ motion/               # React island：MagneticButton, Marquee, StickyCards,
+│  │  ├─ motion/               # React island：MagneticButton, Marquee, CardTheater,
 │  │  │                        #   AnimatedText, ScrollFade, CompassWheel
 │  │  └─ ui/                   # Astro 组件：Eyebrow, Seal, DoubleBezel, CTA
 │  ├─ layouts/                 # BaseLayout, ArticleLayout, PageLayout
@@ -200,7 +203,7 @@ personal-blog/
 ## 9. 验收标准（Checklist）
 
 - [ ] 首页七区块全部实现，顺序与 3.1 一致
-- [ ] 五大动效到位：入场 fade-up、磁吸 CTA、跑马灯滚动驱动、逐字浮现、sticky 叠卡
+- [ ] 五大动效到位：入场 fade-up、磁吸 CTA、跑马灯滚动驱动、逐字浮现、卡片剧场拈起
 - [ ] 罗盘：十二地支 + 八卦 + 四柱 + 双环缓转 + 光晕呼吸
 - [ ] 昼/夜概念：纸色主体 + 墨色技能夜区块 + 萤火绿发光编号
 - [ ] 全站搜索可用（Pagefind），RSS 生成正常

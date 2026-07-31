@@ -1,5 +1,5 @@
 import React from 'react';
-import { MotionConfig, motion } from 'framer-motion';
+import { MotionConfig, motion, useMotionValue, useSpring } from 'framer-motion';
 import './motion.css';
 
 /** 十二地支（顺时针，子起于正上方） */
@@ -21,58 +21,103 @@ function polar(cx: number, cy: number, radius: number, deg: number) {
   };
 }
 
+/** 鼠标倾斜弹簧（软、带回弹） */
+const SPRING = { stiffness: 150, damping: 20, mass: 0.7 };
+
 /**
- * CompassWheel — 天干地支罗盘（品牌核心组件）
- * - 320px 圆盘：十二地支边缘均匀排布 + 八卦淡金 + 双虚线反向缓转环（46s/30s）
+ * CompassWheel — 天干地支罗盘（品牌核心组件）· 3D 版
+ * - 320px 圆盘：正面朝向（能看到全貌），perspective 900px + preserve-3d
+ * - 三层 Z 深度：地支环 translateZ(46px) / 八卦环 translateZ(32px) / 虚线环(34/20px) / 太极核心最高 translateZ(52px)
+ * - 双虚线反向缓转（46s/30s，仅 rotateZ，符合只 transform）
+ * - 鼠标移动：整盘 rotateX/rotateY 弹簧视差（离开回正）
  * - 中心墨色圆核显示**太极（阴阳）**符号 —— 通用玄学意象，不含个人生辰信息
- * - 中心萤火绿光晕呼吸动画（opacity/scale 循环）
- * - 移动端 scale(.68)
+ * - 移动端 scale(.68)，无鼠标不触发倾斜
  */
 export default function CompassWheel() {
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const srx = useSpring(rx, SPRING);
+  const sry = useSpring(ry, SPRING);
+
+  function onMove(e: React.MouseEvent<HTMLDivElement>) {
+    const el = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - el.left) / el.width - 0.5;
+    const py = (e.clientY - el.top) / el.height - 0.5;
+    ry.set(px * 18);
+    rx.set(-py * 12);
+  }
+  function onLeave() {
+    rx.set(0);
+    ry.set(0);
+  }
+
   return (
     <MotionConfig reducedMotion="user">
       <div className="wheel" style={{ width: W, height: W }}>
-        <div className="cw-ring-static" aria-hidden="true" />
         <motion.div
-          className="cw-ring-rot"
-          aria-hidden="true"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 46, repeat: Infinity, ease: 'linear' }}
-        />
-        <motion.div
-          className="cw-ring-rot2"
-          aria-hidden="true"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-        />
-        {BRANCHES.map((b, i) => {
-          const { x, y } = polar(C, C, BRANCH_R, i * 30);
-          return (
-            <span key={b} className="cw-zb" style={{ left: x, top: y }}>
-              {b}
-            </span>
-          );
-        })}
-        {GUA.map((g, i) => {
-          const { x, y } = polar(C, C, GUA_R, 22.5 + i * 45);
-          return (
-            <span key={g} className="cw-gua" style={{ left: x, top: y }}>
-              {g}
-            </span>
-          );
-        })}
-        <motion.div
-          className="cw-glow"
-          aria-hidden="true"
-          animate={{ opacity: [0.45, 0.9, 0.45], scale: [1, 1.18, 1] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: [0.32, 0.72, 0, 1] }}
-        />
-        <div className="cw-core">
-          <div className="cw-tj" aria-hidden="true">
-            <div className="taiji" />
-            <small>太极</small>
+          className="wheel-tilt"
+          style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
+          onMouseMove={onMove}
+          onMouseLeave={onLeave}
+        >
+          <div className="cw-z" style={{ transform: 'translateZ(18px)' }}>
+            <div className="cw-ring-static" aria-hidden="true" />
           </div>
-        </div>
+          <div className="cw-z" style={{ transform: 'translateZ(34px)' }}>
+            <motion.div
+              className="cw-ring-rot"
+              aria-hidden="true"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 46, repeat: Infinity, ease: 'linear' }}
+            />
+          </div>
+          <div className="cw-z" style={{ transform: 'translateZ(20px)' }}>
+            <motion.div
+              className="cw-ring-rot2"
+              aria-hidden="true"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+            />
+          </div>
+          {BRANCHES.map((b, i) => {
+            const { x, y } = polar(C, C, BRANCH_R, i * 30);
+            return (
+              <span
+                key={b}
+                className="cw-zb"
+                style={{ left: x, top: y, transform: `translate(-50%,-50%) translateZ(46px)` }}
+              >
+                {b}
+              </span>
+            );
+          })}
+          {GUA.map((g, i) => {
+            const { x, y } = polar(C, C, GUA_R, 22.5 + i * 45);
+            return (
+              <span
+                key={g}
+                className="cw-gua"
+                style={{ left: x, top: y, transform: `translate(-50%,-50%) translateZ(32px)` }}
+              >
+                {g}
+              </span>
+            );
+          })}
+          <div className="cw-z" style={{ transform: 'translateZ(10px)' }}>
+            <motion.div
+              className="cw-glow"
+              aria-hidden="true"
+              animate={{ opacity: [0.45, 0.9, 0.45], scale: [1, 1.18, 1] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: [0.32, 0.72, 0, 1] }}
+            />
+          </div>
+          <div className="cw-core" style={{ transform: 'translate(-50%,-50%) translateZ(52px)' }}>
+            <div className="cw-tj" aria-hidden="true">
+              <div className="taiji" />
+              <small>太极</small>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </MotionConfig>
   );
