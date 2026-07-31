@@ -98,7 +98,7 @@ export const MARQUEE_ROWS = [
     { label: '', variant: 'symbol', chars: '☰☷☵' },
     { label: '废铁纪元', variant: 't5', tall: true },
     { label: 'Firefly 虚拟人', variant: 't1' },
-    { label: '', variant: 'symbol', chars: '甲申己亥', wide: true },
+    { label: '', variant: 'symbol', chars: '天地玄黄', wide: true },
     { label: 'JobMate', variant: 't3' },
     { label: '香港注册AI', variant: 't6' },
     { label: 'RAG 客服', variant: 't2', tall: true },

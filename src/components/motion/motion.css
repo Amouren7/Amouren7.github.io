@@ -204,26 +204,45 @@
     0 0 0 1px rgba(27, 25, 18, 0.12),
     0 12px 34px -14px rgba(27, 25, 18, 0.6);
 }
-.cw-pillars small {
-  display: block;
+.cw-tj {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.cw-tj small {
   font-size: 8px;
   font-weight: 400;
   letter-spacing: 0.34em;
   color: var(--firefly);
-  margin-bottom: 6px;
-  text-align: center;
   text-shadow: 0 0 12px rgba(188, 240, 27, 0.5);
 }
-.cw-pillars-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #f1ebdd;
-  line-height: 1.7;
-  text-align: center;
+.taiji {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--night) 50%, var(--paper) 50%);
+  position: relative;
+  box-shadow: 0 0 18px rgba(188, 240, 27, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+.taiji::before,
+.taiji::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+}
+.taiji::before {
+  top: 0;
+  background: radial-gradient(circle at 50% 50%, var(--night) 0 6px, var(--paper) 7px);
+}
+.taiji::after {
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, var(--paper) 0 6px, var(--night) 7px);
 }
 @media (max-width: 700px) {
   .wheel {
