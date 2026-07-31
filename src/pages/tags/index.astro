@@ -1,0 +1,114 @@
+---
+/**
+ * 标签索引页 — /tags/
+ * 全站标签云（计数 + 链接到 /tags/[tag]）
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+const counts = new Map<string, number>();
+for (const post of posts) {
+  for (const tag of post.data.tags) {
+    counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+}
+const tags = [...counts.entries()].sort(
+  (a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'),
+);
+---
+<PageLayout title="标签 · A某人" description="全站文章标签索引">
+  <section class="tag-index">
+    <header class="tag-index-head">
+      <Eyebrow text="Tags" />
+      <h1 class="tag-index-title gtext">标签</h1>
+      <p class="tag-index-count">共 {tags.length} 个标签</p>
+    </header>
+
+    {tags.length > 0 ? (
+      <div class="tag-cloud">
+        {tags.map(([tag, n]) => (
+          <a href={`/tags/${tag}/`} class="tag-chip">
+            <span class="tag-chip-name">#{tag}</span>
+            <span class="tag-chip-n">{n}</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="tag-index-empty">暂无标签。</p>
+    )}
+  </section>
+</PageLayout>
+
+<style>
+  .tag-index {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 90px;
+  }
+  .tag-index-head {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .tag-index-title {
+    font-family: var(--font-kanit);
+    font-size: clamp(52px, 12vw, 132px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-top: 20px;
+  }
+  .tag-index-count {
+    margin-top: 22px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(27, 25, 18, 0.12);
+    background: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: transform 0.6s var(--ease-out), background 0.6s var(--ease-out),
+      border-color 0.6s var(--ease-out);
+    will-change: transform;
+  }
+  .tag-chip:hover {
+    transform: translateY(-3px);
+    background: rgba(188, 240, 27, 0.2);
+    border-color: rgba(143, 191, 11, 0.45);
+  }
+  .tag-chip-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .tag-chip-n {
+    font-family: var(--font-kanit);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--firefly-deep);
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(188, 240, 27, 0.25);
+  }
+  .tag-index-empty {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 60px 0;
+  }
+</style>

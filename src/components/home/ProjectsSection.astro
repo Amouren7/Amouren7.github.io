@@ -1,0 +1,75 @@
+---
+/**
+ * ProjectsSection — 首页第 6 区块「项目」（id="projects"）
+ * 浅纸背景圆角上拉（margin-top -26px 覆盖夜区块边缘）。
+ * eyebrow「Works」→ 大字「项目」→ StickyCards（缩放叠卡）。
+ * 数据来自 content/projects 内容集合（按 num 排序，链到 /projects/[slug] 详情页）。
+ */
+import { getCollection } from 'astro:content';
+import ScrollFade from '../motion/ScrollFade';
+import StickyCards from '../motion/StickyCards';
+import Eyebrow from '../ui/Eyebrow.astro';
+
+const projects = (
+  await getCollection('projects', ({ data }) => !data.draft)
+)
+  .sort((a, b) => a.data.num.localeCompare(b.data.num))
+  .map((p) => ({
+    num: p.data.num,
+    cat: p.data.cat,
+    title: p.data.title,
+    desc: p.data.summary,
+    tech: p.data.tech,
+    metrics: p.data.metrics,
+    href: `/projects/${p.slug}`,
+    images: p.data.images ?? { a: '界面', b: '技术亮点', c: '详情见内页' },
+  }));
+---
+
+<section id="projects" class="projects">
+  <div class="projects-head">
+    <ScrollFade client:load>
+      <Eyebrow text="Works" />
+    </ScrollFade>
+    <ScrollFade client:load delay={0.1}>
+      <h2 class="sec-title gtext">项目</h2>
+    </ScrollFade>
+  </div>
+  <StickyCards client:visible cards={projects} />
+</section>
+
+<style>
+  .projects {
+    background: radial-gradient(46% 40% at 50% 0%, rgba(188, 240, 27, 0.1), transparent 60%),
+      var(--paper);
+    border-radius: 40px 40px 0 0;
+    margin-top: -26px;
+    position: relative;
+    z-index: 3;
+    padding: 100px 16px 50px;
+    scroll-margin-top: 96px;
+  }
+  .projects-head {
+    text-align: center;
+  }
+
+  .sec-title {
+    margin-top: 24px;
+    font-family: var(--font-heading);
+    font-size: clamp(44px, 11vw, 150px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  :global(.projects .sc-wrap) {
+    margin-top: 30px;
+  }
+
+  @media (max-width: 640px) {
+    .projects {
+      padding: 80px 12px 40px;
+    }
+  }
+</style>

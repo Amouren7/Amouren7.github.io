@@ -1,0 +1,89 @@
+---
+/**
+ * 标签聚合页 — /tags/[tag]
+ * 列出该标签下的全部文章
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PostCard from '../../components/ui/PostCard.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({ params: { tag }, props: { tag } }));
+}
+
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+
+const posts = (
+  await getCollection('blog', ({ data }) => !data.draft && data.tags.includes(tag))
+).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+<PageLayout title={`#${tag} · A某人`} description={`标签「${tag}」下的全部文章`}>
+  <section class="tag-page">
+    <header class="tag-page-head">
+      <Eyebrow text="Tag" />
+      <h1 class="tag-page-title gtext">#{tag}</h1>
+      <p class="tag-page-count">共 {posts.length} 篇</p>
+    </header>
+
+    {posts.length > 0 ? (
+      <div class="tag-page-list">
+        {posts.map((post) => (
+          <PostCard
+            title={post.data.title}
+            href={`/blog/${post.slug}/`}
+            date={post.data.pubDate.toISOString().slice(0, 10)}
+            tags={post.data.tags}
+            desc={post.data.description}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="tag-page-empty">该标签暂无文章。</p>
+    )}
+  </section>
+</PageLayout>
+
+<style>
+  .tag-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 90px;
+  }
+  .tag-page-head {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .tag-page-title {
+    font-family: var(--font-kanit);
+    font-size: clamp(46px, 10vw, 110px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-top: 20px;
+    word-break: break-all;
+  }
+  .tag-page-count {
+    margin-top: 20px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .tag-page-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .tag-page-empty {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 60px 0;
+  }
+</style>

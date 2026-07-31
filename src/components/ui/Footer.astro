@@ -1,0 +1,46 @@
+---
+import { SITE } from '../../config';
+import Eyebrow from './Eyebrow.astro';
+import Seal from './Seal.astro';
+
+/**
+ * 页脚 —— 眉题 tagline + 大字 A某人 + 朱砂落款印章
+ * 供首页与所有内页共用
+ */
+---
+<footer class="foot">
+  <span class="eyebrow">{SITE.tagline}</span>
+  <div class="fbig-wrap">
+    <div class="fbig gtext">{SITE.name}</div>
+    <div class="seal-pos" aria-hidden="true"><Seal text="某人" size="sm" /></div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    text-align: center;
+    padding: 60px 20px 46px;
+    position: relative;
+  }
+  .fbig-wrap {
+    position: relative;
+    display: inline-block;
+    margin-top: 18px;
+  }
+  .fbig {
+    font-family: var(--font-kanit);
+    font-size: clamp(30px, 7vw, 80px);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+  }
+  .seal-pos {
+    position: absolute;
+    right: -0.35em;
+    top: -0.5em;
+  }
+  :global(.foot .seal) {
+    transform: rotate(7deg);
+  }
+</style>

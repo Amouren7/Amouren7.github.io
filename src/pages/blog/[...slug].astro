@@ -1,0 +1,54 @@
+---
+/**
+ * 文章详情页 — /blog/[...slug]
+ * 内容集合的 slug 含子目录前缀（如 life/2026-07-10-shenzhen-qiuzhi），
+ * 故用 rest 参数承接；getStaticPaths 取非 draft 文章，上一篇/下一篇按 pubDate 相邻
+ */
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { SITE } from '../../config';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+/** 全部非 draft 文章，按 pubDate 降序（最新在前） */
+const all = (
+  await getCollection('blog', ({ data }) => !data.draft)
+).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const idx = all.findIndex((p) => p.slug === post.slug);
+/** 上一篇为较旧一篇，下一篇为较新一篇 */
+const prev = idx >= 0 && idx + 1 < all.length ? all[idx + 1] : undefined;
+const next = idx > 0 ? all[idx - 1] : undefined;
+
+/** 中文阅读时间估算：汉字/400 + 西文单词/200，取整至少 1 分钟 */
+function readingTime(body: string): number {
+  const cjk = (body.match(/[一-鿿]/g) ?? []).length;
+  const latin = (body.replace(/[一-鿿]/g, ' ').match(/[A-Za-z0-9]+/g) ?? []).length;
+  return Math.max(1, Math.round(cjk / 400 + latin / 200));
+}
+---
+<ArticleLayout
+  title={`${post.data.title} · ${SITE.name}`}
+  description={post.data.description}
+  heading={post.data.title}
+  pubDate={post.data.pubDate.toISOString().slice(0, 10)}
+  readingTime={readingTime(post.body)}
+  prev={prev ? { title: prev.data.title, href: `/blog/${prev.slug}/` } : undefined}
+  next={next ? { title: next.data.title, href: `/blog/${next.slug}/` } : undefined}
+  tags={post.data.tags}
+  category={post.data.category}
+  headings={headings}
+>
+  <Content />
+</ArticleLayout>

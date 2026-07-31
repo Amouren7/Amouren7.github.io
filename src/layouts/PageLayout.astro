@@ -1,0 +1,41 @@
+---
+/**
+ * PageLayout — 内页壳（列表页 / 归档 / 关于 / 404 / 文章页共用）
+ * - BaseLayout（纸色底 / 颗粒层 / 字体）+ 悬浮 NavPill + main + Footer
+ * - 右下角全站搜索入口（Pagefind，懒加载，开发环境优雅降级）
+ * - active 传 NAV label 用于导航高亮
+ */
+import BaseLayout from './BaseLayout.astro';
+import NavPill from '../components/motion/NavPill.tsx';
+import Footer from '../components/ui/Footer.astro';
+import SearchModal from '../components/ui/SearchModal.tsx';
+import { NAV, SITE } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 当前页面对应的 NAV label（用于导航高亮），如 '命理' / '生活' / '关于' */
+  active?: string;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  active,
+} = Astro.props;
+---
+<BaseLayout {title} {description}>
+  <NavPill client:load links={NAV} active={active} />
+  <main id="top" class="pl-main">
+    <slot />
+  </main>
+  <Footer />
+  <SearchModal client:load />
+</BaseLayout>
+
+<style>
+  .pl-main {
+    min-height: 100dvh;
+    padding-top: 96px;
+  }
+</style>

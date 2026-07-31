@@ -1,0 +1,117 @@
+---
+/**
+ * CategoryListing — 栏目列表页共用组件
+ * 大字栏目标题（Eyebrow + .gtext）+ desc + 「共 N 篇」+ 标签入口 + PostCard 列表
+ * 供 /ai /mingli /life 三个栏目页使用
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PostCard from './PostCard.astro';
+import Eyebrow from './Eyebrow.astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES, SITE } from '../../config';
+import type { CategoryKey } from '../../config';
+
+interface Props {
+  cat: CategoryKey;
+  /** NAV 高亮 label，如 '项目' / '命理' / '生活' */
+  active?: string;
+}
+
+const { cat, active } = Astro.props;
+const meta = CATEGORIES[cat];
+
+const posts = (
+  await getCollection('blog', ({ data }) => !data.draft && data.category === cat)
+).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+<PageLayout title={`${meta.label} · ${SITE.name}`} description={meta.desc} active={active}>
+  <section class="cat">
+    <header class="cat-head">
+      <Eyebrow text={meta.en} />
+      <h1 class="cat-title gtext">{meta.label}</h1>
+      <p class="cat-desc">{meta.desc}</p>
+      <div class="cat-count">
+        <span>共 {posts.length} 篇</span>
+        <a class="cat-tags-link" href="/tags/">全部标签 ↗</a>
+      </div>
+    </header>
+
+    {posts.length > 0 ? (
+      <div class="cat-list">
+        {posts.map((post) => (
+          <PostCard
+            title={post.data.title}
+            href={`/blog/${post.slug}/`}
+            date={post.data.pubDate.toISOString().slice(0, 10)}
+            tags={post.data.tags}
+            desc={post.data.description}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="cat-empty">本栏目暂无文章。</p>
+    )}
+  </section>
+</PageLayout>
+
+<style>
+  .cat {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 90px;
+  }
+  .cat-head {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+  .cat-title {
+    font-family: var(--font-kanit);
+    font-size: clamp(52px, 12vw, 132px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-top: 20px;
+  }
+  .cat-desc {
+    max-width: 520px;
+    margin: 26px auto 0;
+    font-size: clamp(13px, 1.7vw, 16px);
+    line-height: 1.9;
+    color: var(--ink-soft);
+  }
+  .cat-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .cat-tags-link {
+    color: var(--firefly-deep);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 191, 11, 0.35);
+    transition: background 0.6s var(--ease-out), color 0.6s var(--ease-out);
+  }
+  .cat-tags-link:hover {
+    background: rgba(188, 240, 27, 0.3);
+    color: var(--ink);
+  }
+  .cat-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .cat-empty {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 60px 0;
+  }
+</style>

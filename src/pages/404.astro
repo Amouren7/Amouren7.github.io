@@ -1,0 +1,101 @@
+---
+/**
+ * 404 彩蛋页 — /404
+ * CompassWheel 天干地支罗盘 + 「迷路了」大字 + 返回首页
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import CompassWheel from '../components/motion/CompassWheel.tsx';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+---
+<PageLayout title="404 · 迷路了 · A某人" description="你访问的页面不存在">
+  <section class="nf">
+    <div class="nf-wheel">
+      <CompassWheel client:load />
+    </div>
+    <Eyebrow text="404 · 不在四柱命盘里" />
+    <h1 class="nf-title gtext">迷路了</h1>
+    <p class="nf-desc">
+      你找的页面不在这张命盘里。可能是方向走岔了，也可能它已经被移走或从未存在。
+    </p>
+    <a href="/" class="nf-home">
+      返回首页
+      <span class="nf-arr" aria-hidden="true">↗</span>
+    </a>
+  </section>
+</PageLayout>
+
+<style>
+  .nf {
+    min-height: 72dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px 90px;
+    background: radial-gradient(
+      52% 46% at 50% 12%,
+      rgba(188, 240, 27, 0.12),
+      transparent 62%
+    );
+  }
+  .nf-wheel {
+    margin-bottom: 40px;
+  }
+  .nf-title {
+    font-family: var(--font-kanit);
+    font-size: clamp(52px, 13vw, 150px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin-top: 26px;
+  }
+  .nf-desc {
+    max-width: 460px;
+    margin: 24px auto 0;
+    font-size: clamp(13px, 1.7vw, 16px);
+    line-height: 1.9;
+    color: var(--ink-soft);
+  }
+  .nf-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 34px;
+    padding: 8px 9px 8px 28px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #cdf33a, var(--firefly));
+    color: var(--ink);
+    font-family: var(--font-kanit);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    text-decoration: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      0 0 0 1px rgba(27, 25, 18, 0.08),
+      0 16px 40px -12px rgba(188, 240, 27, 0.85);
+    transition: transform 0.6s var(--ease-out);
+    will-change: transform;
+  }
+  .nf-home:hover {
+    transform: scale(1.04);
+  }
+  .nf-arr {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(27, 25, 18, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: transform 0.7s var(--ease-out);
+  }
+  .nf-home:hover .nf-arr {
+    transform: translate(3px, -3px) scale(1.06);
+  }
+</style>

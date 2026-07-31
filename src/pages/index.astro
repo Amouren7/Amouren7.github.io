@@ -1,0 +1,27 @@
+---
+/**
+ * 首页 — 七区块单页叙事（Phase 2）
+ * 1 NavPill → 2 Hero → 3 Marquee → 4 About → 5 Skills(夜) → 6 Projects → 7 Footer
+ * 各区块拆在 src/components/home/ 下，此处只做组装与顺序。
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NavPill from '../components/motion/NavPill.tsx';
+import Footer from '../components/ui/Footer.astro';
+import HeroSection from '../components/home/HeroSection.astro';
+import MarqueeSection from '../components/home/MarqueeSection.astro';
+import AboutSection from '../components/home/AboutSection.astro';
+import SkillsSection from '../components/home/SkillsSection.astro';
+import ProjectsSection from '../components/home/ProjectsSection.astro';
+import { NAV, SITE } from '../config';
+---
+<BaseLayout title={SITE.title} description={SITE.description}>
+  <NavPill client:idle links={NAV} active="项目" />
+  <main id="top">
+    <HeroSection />
+    <MarqueeSection />
+    <AboutSection />
+    <SkillsSection />
+    <ProjectsSection />
+  </main>
+  <Footer />
+</BaseLayout>

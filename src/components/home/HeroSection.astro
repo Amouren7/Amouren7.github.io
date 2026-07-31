@@ -1,0 +1,149 @@
+---
+/**
+ * HeroSection — 首页第 2 区块（首屏 Hero）
+ * 视觉严格参照 homepage-v6.html：
+ * 眉题 → 巨型渐变「A某人」+ 朱砂印章(lg) → 中央罗盘 → 底部 tagline + 磁吸 CTA。
+ * 背景浅纸 + 萤火绿 radial 光斑 + 漂浮干支粒子。
+ * 入场：ScrollFade fade-up + blur（800ms，错峰 0 / 0.15 / 0.3）。
+ */
+import ScrollFade from '../motion/ScrollFade';
+import CompassWheel from '../motion/CompassWheel';
+import MagneticButton from '../motion/MagneticButton';
+import Eyebrow from '../ui/Eyebrow.astro';
+import Seal from '../ui/Seal.astro';
+import Particles from './Particles.astro';
+import { SITE } from '../../config';
+---
+
+<section class="hero">
+  <Particles />
+  <ScrollFade client:load className="hero-head" y={40} delay={0}>
+    <Eyebrow text={SITE.heroEyebrow} />
+    <h1 class="hi gtext">
+      {SITE.name}
+      <span class="hero-stamp"><Seal text="某人" size="lg" /></span>
+    </h1>
+    <ScrollFade client:load className="hero-wheel" y={40} delay={0.15}>
+      <CompassWheel client:load />
+    </ScrollFade>
+  </ScrollFade>
+  <ScrollFade client:load className="hero-bottom" y={24} delay={0.3}>
+    <p class="tagline">{SITE.heroTagline}</p>
+    <div class="cta-wrap">
+      <MagneticButton client:load label="联系我" href="/about#contact" />
+      <small>Magnetic Hover</small>
+    </div>
+  </ScrollFade>
+</section>
+
+<style>
+  .hero {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 26px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(58% 50% at 12% 4%, rgba(188, 240, 27, 0.16), transparent 62%),
+      radial-gradient(46% 42% at 92% 8%, rgba(143, 191, 11, 0.1), transparent 58%),
+      radial-gradient(40% 40% at 50% 100%, rgba(188, 240, 27, 0.06), transparent 60%),
+      var(--paper);
+  }
+
+  /* ScrollFade 渲染的 motion.div 需要全局可命中 */
+  :global(.hero-head) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    padding-top: 16px;
+  }
+  :global(.hero-head .eyebrow) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hi {
+    position: relative;
+    display: inline-block;
+    margin-top: 16px;
+    font-family: var(--font-heading);
+    font-size: clamp(52px, 14vw, 200px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    filter: drop-shadow(0 0 40px rgba(188, 240, 27, 0.25));
+  }
+  .hero-stamp {
+    position: absolute;
+    right: -0.45em;
+    top: 14%;
+  }
+  :global(.hero-stamp .seal) {
+    transform: rotate(7deg);
+    border-radius: 9px;
+  }
+
+  :global(.hero-wheel) {
+    margin-top: 30px;
+    position: relative;
+    z-index: 2;
+  }
+
+  :global(.hero-bottom) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  :global(.hero-bottom .tagline) {
+    font-family: var(--font-kanit);
+    font-size: clamp(11px, 1.3vw, 16px);
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    line-height: 1.55;
+    max-width: 250px;
+    color: var(--ink-soft);
+  }
+
+  .cta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .cta-wrap small {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    opacity: 0.5;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 700px) {
+    :global(.hero-wheel) { margin-top: 16px; }
+    .hi { font-size: clamp(46px, 18vw, 64px); }
+    :global(.hero-stamp .seal) {
+      width: 34px !important;
+      height: 34px !important;
+      font-size: 12px !important;
+    }
+    :global(.hero-bottom) { padding: 0 22px; }
+  }
+  @media (max-width: 480px) {
+    :global(.hero-bottom) {
+      justify-content: center;
+      text-align: center;
+    }
+    :global(.hero-bottom .tagline) { max-width: 100%; }
+  }
+</style>

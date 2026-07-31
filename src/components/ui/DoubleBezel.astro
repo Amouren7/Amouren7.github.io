@@ -1,0 +1,17 @@
+---
+/**
+ * DoubleBezel — Double-Bezel 双层卡片外壳
+ * 渲染 .dbz > .core 双层结构，内容通过 slot 放入内芯。
+ * 依赖全局类：.dbz（global.css，外壳白底70% / 毛发描边 / 外圆角20px / 环境阴影）
+ *              与 .dbz > .core（内芯纯白 / 内高光 / 同心圆角15px）
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+<div class:list={['dbz', className]}>
+  <div class="core">
+    <slot />
+  </div>
+</div>

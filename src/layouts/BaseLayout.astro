@@ -1,0 +1,51 @@
+---
+/**
+ * BaseLayout — 全站基础布局
+ * - <html lang="zh-CN"> + viewport / SEO meta
+ * - 本地化字体：@fontsource/kanit（拉丁 400-900）
+ * - 引入设计 token：global.css（:root 变量 + .gtext/.eyebrow/.dbz/.seal/.grain/.prose-article）
+ * - .grain 全局胶片颗粒层 + body 纸色底
+ */
+import '@fontsource/kanit/latin-400.css';
+import '@fontsource/kanit/latin-500.css';
+import '@fontsource/kanit/latin-600.css';
+import '@fontsource/kanit/latin-700.css';
+import '@fontsource/kanit/latin-800.css';
+import '@fontsource/kanit/latin-900.css';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'A某人 · 白天写代码，晚上排命盘',
+  description = 'A某人 的个人博客 —— AI 技术 / 玄学命理 / 生活游戏。',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#F4F0E5" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <!-- 无 JS 兜底：Framer 入场初始 opacity:0 的元素强制可见，避免首屏空白 -->
+    <noscript>
+      <style>
+        [style*="opacity: 0"],
+        [style*="opacity:0"] { opacity: 1 !important; }
+      </style>
+    </noscript>
+    <div class="grain" aria-hidden="true" />
+    <slot />
+  </body>
+</html>

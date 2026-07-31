@@ -1,0 +1,31 @@
+---
+/**
+ * Seal — 朱砂印章落款
+ * 依赖全局类：.seal（global.css，自带 rotate(-3deg) + 朱砂底色）
+ * 竖排书写（写作方向 vertical-rl），方印内文字自上而下。
+ */
+interface Props {
+  text?: string;
+  size?: 'sm' | 'lg';
+}
+const { text = '某人', size = 'sm' } = Astro.props;
+
+const style =
+  size === 'lg'
+    ? {
+        width: 'clamp(40px, 4.2vw, 56px)',
+        height: 'clamp(40px, 4.2vw, 56px)',
+        fontSize: 'clamp(13px, 1.7vw, 18px)',
+      }
+    : { width: '40px', height: '40px', fontSize: '14px' };
+---
+<span class="seal" style={style} role="img" aria-label={text}>{text}</span>
+
+<style>
+  .seal {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+</style>

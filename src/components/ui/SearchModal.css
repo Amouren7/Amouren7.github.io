@@ -1,0 +1,203 @@
+/* ============================================================
+   SearchModal — 全站搜索入口 + Pagefind modal
+   （设计系统：Paper 底 / 墨字 / 萤火绿 / Double-Bezel）
+   ============================================================ */
+
+/* ---------- 触发按钮（右下角浮动胶囊） ---------- */
+.sm-trigger {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 25, 18, 0.1);
+  background: linear-gradient(135deg, #cdf33a, var(--firefly));
+  color: var(--ink);
+  font-family: var(--font-kanit);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 0 0 1px rgba(27, 25, 18, 0.08),
+    0 16px 40px -12px rgba(188, 240, 27, 0.85);
+  transition: transform 0.6s var(--ease-out);
+  will-change: transform;
+}
+.sm-trigger:hover {
+  transform: scale(1.05);
+}
+.sm-trigger:active {
+  transform: scale(0.97);
+}
+.sm-trigger-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 3px rgba(27, 25, 18, 0.12);
+}
+
+/* ---------- 遮罩 + 面板 ---------- */
+.sm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(20, 18, 12, 0.52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s var(--ease-out), visibility 0.6s;
+}
+.sm-overlay.sm-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sm-panel {
+  width: 100%;
+  max-width: 680px;
+  padding: 6px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(27, 25, 18, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 30px 70px -24px rgba(27, 25, 18, 0.6);
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.6s var(--ease-out);
+}
+.sm-overlay.sm-open .sm-panel {
+  transform: translateY(0) scale(1);
+}
+
+.sm-core {
+  display: flex;
+  flex-direction: column;
+  max-height: min(74dvh, 640px);
+  border-radius: 15px;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.sm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px 10px;
+}
+.sm-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.sm-close {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 25, 18, 0.14);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+.sm-close:hover {
+  background: rgba(188, 240, 27, 0.28);
+  transform: rotate(90deg);
+}
+
+/* ---------- 加载 / 降级状态 ---------- */
+.sm-state {
+  padding: 64px 28px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.9;
+}
+.sm-state p {
+  margin: 0;
+}
+.sm-state code {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.88em;
+  background: rgba(27, 25, 18, 0.06);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.sm-fb-title {
+  font-family: var(--font-serifsc);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.sm-fb-sub {
+  font-size: 13px;
+}
+.sm-spin {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(143, 191, 11, 0.25);
+  border-top-color: var(--firefly-deep);
+  animation: sm-rotate 0.9s linear infinite;
+}
+@keyframes sm-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Pagefind UI 挂载区 ---------- */
+.sm-ui {
+  padding: 2px 14px 16px;
+  overflow-y: auto;
+}
+.sm-ui-idle {
+  display: none;
+}
+
+/* ---------- 设计系统覆写 Pagefind 主题变量 ---------- */
+.sm-panel {
+  --pagefind-ui-scale: 0.85;
+  --pagefind-ui-primary: var(--firefly-deep);
+  --pagefind-ui-text: var(--ink);
+  --pagefind-ui-background: var(--card);
+  --pagefind-ui-border: rgba(27, 25, 18, 0.12);
+  --pagefind-ui-tag: rgba(188, 240, 27, 0.25);
+  --pagefind-ui-border-radius: 12px;
+  --pagefind-ui-image-border-radius: 12px;
+  --pagefind-ui-font: var(--font-sanssc);
+}
+
+/* 移动端 */
+@media (max-width: 640px) {
+  .sm-trigger {
+    right: 16px;
+    bottom: 16px;
+    padding: 10px 16px;
+  }
+  .sm-overlay {
+    padding: 10px;
+  }
+}

@@ -1,0 +1,11 @@
+---
+/**
+ * Eyebrow — 眉题 pill（全站区块小标签）
+ * 依赖全局类：.eyebrow（global.css）
+ */
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+<span class="eyebrow">{text}</span>

@@ -1,0 +1,149 @@
+---
+/**
+ * 归档页 — /archive
+ * 全部文章按年份分组、按日期降序的时间归档
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES } from '../config';
+
+const posts = (
+  await getCollection('blog', ({ data }) => !data.draft)
+).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const groups = new Map<number, typeof posts>();
+for (const post of posts) {
+  const year = post.data.pubDate.getFullYear();
+  const list = groups.get(year);
+  if (list) list.push(post);
+  else groups.set(year, [post]);
+}
+const years = [...groups.entries()];
+---
+<PageLayout title="归档 · A某人" description="全部文章按时间归档">
+  <section class="arc">
+    <header class="arc-head">
+      <Eyebrow text="Archive" />
+      <h1 class="arc-title gtext">归档</h1>
+      <p class="arc-count">共 {posts.length} 篇</p>
+    </header>
+
+    {years.length > 0 ? (
+      <div class="arc-years">
+        {years.map(([year, list]) => (
+          <section class="arc-year">
+            <h2 class="arc-year-title">{year}</h2>
+            <ol class="arc-list">
+              {list.map((post) => {
+                const iso = post.data.pubDate.toISOString().slice(0, 10);
+                const label = new Intl.DateTimeFormat('zh-CN', {
+                  month: 'long',
+                  day: 'numeric',
+                }).format(post.data.pubDate);
+                return (
+                  <li>
+                    <a href={`/blog/${post.slug}/`} class="arc-row">
+                      <time datetime={iso} class="arc-date">{label}</time>
+                      <span class="arc-title-text">{post.data.title}</span>
+                      <span class="arc-cat">{CATEGORIES[post.data.category].label}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        ))}
+      </div>
+    ) : (
+      <p class="arc-empty">暂无文章。</p>
+    )}
+  </section>
+</PageLayout>
+
+<style>
+  .arc {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 90px;
+  }
+  .arc-head {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .arc-title {
+    font-family: var(--font-kanit);
+    font-size: clamp(52px, 12vw, 132px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-top: 20px;
+  }
+  .arc-count {
+    margin-top: 22px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .arc-year {
+    margin-bottom: 40px;
+  }
+  .arc-year-title {
+    font-family: var(--font-kanit);
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--firefly-deep);
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(27, 25, 18, 0.12);
+    margin-bottom: 6px;
+  }
+  .arc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .arc-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 14px 6px;
+    border-bottom: 1px solid rgba(27, 25, 18, 0.06);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.6s var(--ease-out), background 0.6s var(--ease-out);
+  }
+  .arc-row:hover {
+    transform: translateX(14px);
+    background: rgba(188, 240, 27, 0.08);
+  }
+  .arc-date {
+    flex-shrink: 0;
+    font-family: var(--font-kanit);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    min-width: 64px;
+  }
+  .arc-title-text {
+    flex: 1;
+    font-family: var(--font-serifsc);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .arc-cat {
+    flex-shrink: 0;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--firefly-deep);
+  }
+  .arc-empty {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 60px 0;
+  }
+</style>

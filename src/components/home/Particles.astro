@@ -1,0 +1,51 @@
+---
+/**
+ * Particles — Hero 背景漂浮干支粒子（甲辰乾坤 · 低透明）
+ * 仅 transform/opacity 动画（drift 上下微移 + 微旋），aria-hidden。
+ * 视觉参照 homepage-v6.html 的 .particle / @keyframes drift。
+ */
+const particles = [
+  { ch: '甲', cls: 'p1' },
+  { ch: '辰', cls: 'p2' },
+  { ch: '乾', cls: 'p3' },
+  { ch: '子', cls: 'p4' },
+  { ch: '坤', cls: 'p5' },
+];
+---
+<div class="particles" aria-hidden="true">
+  {particles.map((p) => (
+    <span class={`particle ${p.cls}`}>{p.ch}</span>
+  ))}
+</div>
+
+<style>
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .particle {
+    position: absolute;
+    font-family: var(--font-serifsc);
+    font-weight: 600;
+    opacity: 0.22;
+    color: var(--firefly-deep);
+    user-select: none;
+    animation: drift 13s ease-in-out infinite;
+  }
+  .p1 { top: 12%; left: 9%; font-size: 20px; }
+  .p2 { top: 32%; left: 5%; font-size: 13px; animation-delay: -3s; }
+  .p3 { top: 14%; right: 8%; font-size: 16px; animation-delay: -6s; }
+  .p4 { top: 36%; right: 6%; font-size: 12px; animation-delay: -9s; }
+  .p5 { top: 60%; left: 14%; font-size: 11px; animation-delay: -2s; }
+
+  @keyframes drift {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-16px) rotate(7deg); }
+  }
+
+  @media (max-width: 640px) {
+    .p2, .p4 { display: none; }
+  }
+</style>

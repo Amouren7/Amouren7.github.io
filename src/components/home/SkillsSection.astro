@@ -1,0 +1,165 @@
+---
+/**
+ * SkillsSection — 首页第 5 区块「四艺」夜区块
+ * 墨色背景 + 圆角上拉（40px top），eyebrow「Skills · 四艺」（萤火绿）→
+ * 大字「技能」用 .gtext-light → SKILLS 四行：萤火绿发光编号（呼吸）+ 名称
+ * + 五行小字 + 描述；悬停编号增亮、右侧 ↗ 滑出。
+ * 数据来自 config.ts 的 SKILLS。
+ */
+import ScrollFade from '../motion/ScrollFade';
+import Eyebrow from '../ui/Eyebrow.astro';
+import { SKILLS } from '../../config';
+---
+
+<section class="skills" aria-label="技能四艺">
+  <div class="skills-head">
+    <ScrollFade client:load>
+      <Eyebrow text="Skills · 四艺" />
+    </ScrollFade>
+    <ScrollFade client:load delay={0.1}>
+      <h2 class="sec-title gtext-light">技能</h2>
+    </ScrollFade>
+  </div>
+  <div class="srv-list">
+    {SKILLS.map((s, i) => (
+      <ScrollFade client:load delay={i * 0.08} y={40}>
+        <div class="srv">
+          <span class="num" aria-hidden="true">{s.num}</span>
+          <div class="body">
+            <h3>{s.name}</h3>
+            <div class="gan">{s.wuxing}</div>
+            <p>{s.desc}</p>
+          </div>
+          <span class="arr" aria-hidden="true">↗</span>
+        </div>
+      </ScrollFade>
+    ))}
+  </div>
+</section>
+
+<style>
+  .skills {
+    background: radial-gradient(60% 60% at 50% 0%, rgba(188, 240, 27, 0.06), transparent 55%),
+      var(--night);
+    color: var(--night-text);
+    border-radius: 40px 40px 0 0;
+    padding: 110px 22px 70px;
+    margin-top: 44px;
+    position: relative;
+  }
+  .skills-head {
+    max-width: 880px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* Eyebrow 夜区块变体（萤火绿描边/文字） */
+  :global(.skills .eyebrow) {
+    border-color: rgba(188, 240, 27, 0.3);
+    color: var(--firefly);
+    background: rgba(188, 240, 27, 0.05);
+  }
+
+  .sec-title {
+    margin-top: 24px;
+    font-family: var(--font-heading);
+    font-size: clamp(44px, 11vw, 150px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .srv {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    padding: 34px 8px;
+    border-top: 1px solid rgba(231, 224, 207, 0.12);
+  }
+  .srv:last-child {
+    border-bottom: 1px solid rgba(231, 224, 207, 0.12);
+  }
+
+  /* 萤火绿发光编号：静态光晕 + 呼吸（仅 opacity，符合只 transform/opacity） */
+  .num {
+    font-family: var(--font-kanit);
+    font-size: clamp(40px, 8vw, 92px);
+    font-weight: 900;
+    line-height: 0.9;
+    min-width: 100px;
+    color: var(--firefly);
+    text-shadow: 0 0 24px rgba(188, 240, 27, 0.35);
+    opacity: 0.85;
+    animation: num-breathe 4s ease-in-out infinite;
+    transition: text-shadow 0.6s var(--ease-out);
+  }
+  .srv:hover .num {
+    text-shadow: 0 0 34px rgba(188, 240, 27, 0.6);
+  }
+
+  .body {
+    flex: 1;
+  }
+  .body h3 {
+    font-family: var(--font-heading);
+    font-size: clamp(16px, 2vw, 25px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--night-text);
+  }
+  .gan {
+    font-family: var(--font-kanit);
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    color: var(--firefly);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .body p {
+    margin-top: 10px;
+    font-weight: 300;
+    line-height: 1.65;
+    opacity: 0.65;
+    max-width: 520px;
+    font-size: clamp(12px, 1.5vw, 16px);
+    color: var(--night-text);
+  }
+
+  /* 右侧 ↗：默认滑出隐藏，悬停滑入 */
+  .arr {
+    margin-left: auto;
+    align-self: center;
+    opacity: 0;
+    transform: translate(-6px, 6px);
+    transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+    font-size: 18px;
+    color: var(--firefly);
+  }
+  .srv:hover .arr {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  @keyframes num-breathe {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  @media (max-width: 640px) {
+    .skills {
+      padding: 90px 20px 56px;
+    }
+    .srv {
+      gap: 16px;
+      padding: 28px 4px;
+    }
+    .num {
+      min-width: 60px;
+      font-size: clamp(34px, 9vw, 56px);
+    }
+  }
+</style>

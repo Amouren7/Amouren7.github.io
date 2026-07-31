@@ -1,0 +1,150 @@
+---
+/**
+ * PostCard — 文章卡片（栏目列表 / 标签页 / 归档共用）
+ * DoubleBezel 双层外壳 + 日期 + 标签（链接到 /tags/[tag]）+ 标题 + 摘要
+ * 整卡可点（stretched-link），标题/标签为独立合法链接
+ */
+import DoubleBezel from './DoubleBezel.astro';
+
+interface Props {
+  title: string;
+  href: string;
+  /** ISO 日期，如 2026-07-20 */
+  date: string;
+  tags: string[];
+  desc?: string;
+}
+
+const { title, href, date, tags = [], desc } = Astro.props;
+
+const dateLabel = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(new Date(date));
+---
+<article class="pc-card">
+  <DoubleBezel>
+    <div class="pc-core">
+      <div class="pc-meta">
+        <time datetime={date} class="pc-date">{dateLabel}</time>
+        {tags.length > 0 && (
+          <div class="pc-tags">
+            {tags.map((tag) => (
+              <a href={`/tags/${tag}/`} class="pc-tag">#{tag}</a>
+            ))}
+          </div>
+        )}
+      </div>
+      <h3 class="pc-title">
+        <a href={href} class="pc-title-link">{title}</a>
+      </h3>
+      {desc && <p class="pc-desc">{desc}</p>}
+      <a href={href} class="pc-more" aria-label={`阅读：${title}`}>↗</a>
+    </div>
+  </DoubleBezel>
+</article>
+
+<style>
+  .pc-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.7s var(--ease-out);
+    will-change: transform;
+  }
+  .pc-card:hover {
+    transform: translateY(-4px);
+  }
+  .pc-core {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px 24px;
+    height: 100%;
+  }
+  /* stretched-link：让整卡可点击（覆盖核心区域，位于标签/链接之下） */
+  .pc-title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .pc-meta {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .pc-date {
+    font-family: var(--font-kanit);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .pc-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pc-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--firefly-deep);
+    text-decoration: none;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(143, 191, 11, 0.35);
+    background: rgba(188, 240, 27, 0.1);
+    transition: background 0.6s var(--ease-out), color 0.6s var(--ease-out);
+  }
+  .pc-tag:hover {
+    background: rgba(188, 240, 27, 0.35);
+    color: var(--ink);
+  }
+  .pc-title {
+    position: relative;
+    font-family: var(--font-serifsc);
+    font-size: clamp(19px, 2.4vw, 25px);
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .pc-title-link {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .pc-desc {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pc-more {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    z-index: 2;
+    font-size: 15px;
+    color: var(--firefly-deep);
+    text-decoration: none;
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  }
+  .pc-card:hover .pc-more {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+</style>

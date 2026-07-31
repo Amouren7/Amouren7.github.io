@@ -1,0 +1,100 @@
+---
+/**
+ * AboutSection — 首页第 4 区块「关于我」（id="about"）
+ * eyebrow「About」→ 大字「关于我」→ AnimatedText 逐字浮现正文 → Lv 徽章。
+ * 正文两行：第二行较淡（参照 v6 的 .faint，opacity 0.5 保持可读）。
+ */
+import ScrollFade from '../motion/ScrollFade';
+import AnimatedText from '../motion/AnimatedText';
+import Eyebrow from '../ui/Eyebrow.astro';
+
+const aboutText = `2004年生，软件工程毕业，现于深圳做 AI 应用。白天写代码，晚上排命盘。
+相信技术改变世界，也相信天命有迹可循。擅长把复杂变成好用，把传统译成当代。`;
+---
+
+<section id="about" class="about">
+  <ScrollFade client:load>
+    <Eyebrow text="About" />
+  </ScrollFade>
+  <ScrollFade client:load delay={0.1}>
+    <h2 class="sec-title gtext">关于我</h2>
+  </ScrollFade>
+  <ScrollFade client:load delay={0.2}>
+    <div class="about-text">
+      <AnimatedText client:visible text={aboutText} />
+    </div>
+  </ScrollFade>
+  <ScrollFade client:load delay={0.3}>
+    <span class="lvl">
+      <span class="dot" aria-hidden="true"></span>
+      Lv.22 · ShenZhen · AI Engineer
+    </span>
+  </ScrollFade>
+</section>
+
+<style>
+  .about {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 20px;
+    position: relative;
+    scroll-margin-top: 96px;
+    background: radial-gradient(50% 40% at 50% 0%, rgba(188, 240, 27, 0.1), transparent 60%);
+  }
+
+  .sec-title {
+    margin-top: 24px;
+    font-family: var(--font-heading);
+    font-size: clamp(44px, 11vw, 150px);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  /* AnimatedText 渲染的 p.at 在 React island 内，需全局命中 */
+  :global(.about .at) {
+    max-width: 560px;
+    margin: 34px auto 0;
+    font-size: clamp(14px, 1.8vw, 20px);
+    line-height: 1.8;
+    color: var(--ink);
+  }
+  :global(.about .at-line:last-child) {
+    opacity: 0.6;
+  }
+
+  .lvl {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 30px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(27, 25, 18, 0.16);
+    background: rgba(255, 255, 255, 0.55);
+    font-family: var(--font-kanit);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--firefly-deep);
+    box-shadow: 0 0 10px rgba(188, 240, 27, 0.8);
+  }
+
+  @media (max-width: 640px) {
+    .about {
+      padding: 90px 20px;
+    }
+  }
+</style>

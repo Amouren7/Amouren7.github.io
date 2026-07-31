@@ -1,0 +1,50 @@
+---
+/**
+ * MarqueeSection — 首页第 3 区块（跑马灯）
+ * 上方一行小标签 + motion/Marquee 双行反向滚动图像带。
+ * 数据来自 config.ts 的 MARQUEE_ROWS。
+ */
+import Marquee from '../motion/Marquee';
+import ScrollFade from '../motion/ScrollFade';
+import { MARQUEE_ROWS } from '../../config';
+---
+
+<section class="mq-section" aria-label="作品与符号">
+  <ScrollFade client:load>
+    <div class="mq-label">Scroll-driven marquee · 作品与符号</div>
+  </ScrollFade>
+  <Marquee client:visible rows={MARQUEE_ROWS} />
+</section>
+
+<style>
+  .mq-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 34px 8px;
+    font-family: var(--font-kanit);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    color: var(--ink-soft);
+  }
+  .mq-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(27, 25, 18, 0.14), transparent);
+  }
+
+  /* 收紧 Marquee 自带的上留白（.mq 默认 padding-top 90px）→ 保留呼吸节奏 */
+  :global(.mq-section .mq) {
+    padding-top: 64px;
+  }
+
+  @media (max-width: 640px) {
+    .mq-label {
+      padding: 0 20px 8px;
+      letter-spacing: 0.18em;
+    }
+  }
+</style>
