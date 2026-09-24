@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import {
   MotionConfig,
   motion,
@@ -51,7 +51,7 @@ function Tile({ tile, index }: { tile: MarqueeTile; index: number }) {
 
 /**
  * Marquee — 双行反向滚动图像带（scroll-driven）
- * 位移公式：(scrollY - sectionTop + innerHeight) * 0.3
+ * 位移绑定到区块自身的滚动进度，避免初次测量后布局变化造成偏移漂移。
  * 第一行正向、第二行反向（附加 -36px 起始错位）。
  * tile：.dbz 双层外壳 + .core；默认 216x138，tall 高172、wide 高132；微倾斜。
  * 仅 transform（framer x MotionValue），will-change: transform。
@@ -59,28 +59,12 @@ function Tile({ tile, index }: { tile: MarqueeTile; index: number }) {
 export default function Marquee({ rows }: MarqueeProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion() ?? false;
-  const { scrollY } = useScroll();
-  const [sectionTop, setSectionTop] = useState(0);
-  const [viewportH, setViewportH] = useState(0);
-
-  useEffect(() => {
-    const measure = () => {
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      setSectionTop(rect.top + window.scrollY);
-      setViewportH(window.innerHeight);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, []);
-
-  const shift = (v: number, sign: 1 | -1) =>
-    reduced ? 0 : (v - sectionTop + viewportH) * 0.3 * sign;
-
-  const dir1 = useTransform(scrollY, (v) => shift(v, 1));
-  const dir2 = useTransform(scrollY, (v) => shift(v, -1) - 36);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const dir1 = useTransform(scrollYProgress, (v) => (reduced ? 0 : v * 260));
+  const dir2 = useTransform(scrollYProgress, (v) => (reduced ? 0 : -36 - v * 260));
 
   return (
     <MotionConfig reducedMotion="user">

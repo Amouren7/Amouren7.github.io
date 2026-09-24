@@ -1,7 +1,7 @@
 ---
 /**
  * 关于页 — /about（求职作品集）
- * Hero 大字「关于」→ 简介 → 技能四艺（夜区块）→ 代表性项目（DoubleBezel 网格）
+ * Hero 大字「关于」→ 当前经历 → AI 能力 → 代表性项目（DoubleBezel 网格）
  * → 联系方式（email / GitHub）
  */
 import PageLayout from '../layouts/PageLayout.astro';
@@ -14,30 +14,51 @@ import { SITE, SKILLS, TOOLCHAIN_GROUPS } from '../config';
 // 代表性项目（来自 content/projects，链到详情页 /projects/[slug]）
 const projects = (
   await getCollection('projects', ({ data }) => !data.draft)
-).sort((a, b) => a.data.num.localeCompare(b.data.num));
+)
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.num.localeCompare(b.data.num));
 ---
-<PageLayout title={`关于 · ${SITE.name}`} description="姜高辉——软件工程毕业、深圳 AI 应用岗，白天写代码晚上排命盘。" active="关于">
+<PageLayout title={`关于 · ${SITE.name}`} description="姜高辉，软件工程背景，现于深圳市广源达印刷包装有限公司从事 AI 应用落地。" active="关于">
   {/* ---------- HERO ---------- */}
   <section class="ab-hero">
     <ScrollFade client:load>
       <Eyebrow text={SITE.heroEyebrow} />
       <h1 class="ab-title gtext">关于</h1>
-      <p class="ab-lead">{SITE.author} · 软件工程毕业</p>
+      <p class="ab-lead">{SITE.author} · 软件工程背景 · 深圳</p>
       <p class="ab-desc">
-        现于深圳做 AI 应用，白天写代码，晚上排命盘。相信技术改变世界，也相信天命有迹可循——擅长把复杂变成好用，把传统译成当代。
+        现于深圳市广源达印刷包装有限公司从事 AI 应用落地，关注大模型如何进入真实业务流程。围绕销售沟通、客户信息处理与工作流自动化，从需求梳理、原型验证到试点迭代，持续把 AI 做成一线人员能用的工具。
       </p>
       <div class="ab-lvl">
         <span class="ab-lvl-dot" aria-hidden="true" />
-        Lv.∞ · ShenZhen · AI Engineer
+        Shenzhen · AI Application Delivery
       </div>
     </ScrollFade>
   </section>
 
-  {/* ---------- 技能「四艺」（夜区块） ---------- */}
+  {/* ---------- 当前工作经历 ---------- */}
+  <section class="ab-experience" aria-label="当前工作经历">
+    <div class="ab-exp-card">
+      <div class="ab-exp-date">
+        <Eyebrow text="Experience · 01" />
+        <time datetime="2026-08">2026.08 — 至今</time>
+      </div>
+      <div class="ab-exp-main">
+        <h2>深圳市广源达印刷包装有限公司</h2>
+        <p class="ab-exp-role">AI 应用落地</p>
+        <ul>
+          <li>梳理印刷包装业务流程，识别适合 AI 辅助的具体工作环节。</li>
+          <li>推动销售沟通辅助、客户信息整理等应用进入业务验证与持续迭代。</li>
+          <li>兼顾使用体验、信息保护、人工确认和交付后的维护。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- AI 能力 ---------- */}
   <section class="ab-skills">
     <div class="ab-skills-inner">
       <div class="ab-skills-head">
-        <Eyebrow text="Skills · 四艺" />
+        <Eyebrow text="Skills · Focus" />
         <h2 class="ab-skills-title gtext-light">技能</h2>
       </div>
       <div class="ab-skills-list">
@@ -60,8 +81,9 @@ const projects = (
   <section class="ab-projects" id="projects">
     <ScrollFade client:load>
       <div class="ab-projects-head">
-        <Eyebrow text="Works" />
-        <h2 class="ab-projects-title gtext">项目</h2>
+        <Eyebrow text="Selected Work · AI" />
+        <h2 class="ab-projects-title gtext">项目案例</h2>
+        <p class="ab-projects-note">以下界面均为脱敏演示图，画面内容与字段采用合成示例。</p>
       </div>
       <div class="ab-projects-grid">
         {projects.map((p) => (
@@ -78,13 +100,18 @@ const projects = (
                     详情 <span class="ab-proj-ghost-arr">↗</span>
                   </span>
                 </div>
-                <div class="ab-proj-imgs">
-                  <div class="ab-ph ab-ph-a">{p.data.images?.a ?? '界面'}</div>
-                  <div class="ab-ph-col">
-                    <div class="ab-ph ab-ph-b">{p.data.images?.b ?? '技术亮点'}</div>
-                    <div class="ab-ph ab-ph-c">{p.data.images?.c ?? '详情见内页'}</div>
-                  </div>
-                </div>
+                <p class="ab-proj-summary">{p.data.summary}</p>
+                {p.data.preview && (
+                  <figure class="ab-proj-preview">
+                    <img
+                      src={p.data.preview.src}
+                      alt={p.data.preview.alt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <figcaption>{p.data.preview.caption}</figcaption>
+                  </figure>
+                )}
               </div>
             </DoubleBezel>
           </a>
@@ -98,9 +125,9 @@ const projects = (
     <ScrollFade client:load>
       <div class="ab-toolbox-head">
         <Eyebrow text="Toolbox" />
-        <h2 class="ab-toolbox-title gtext">AI 工具链</h2>
+        <h2 class="ab-toolbox-title gtext">能力与方法</h2>
         <p class="ab-toolbox-desc">
-          日常依赖的 AI 工具组合：编码、自动化、知识记忆与设计，构成我的完整工作流。
+          从业务问题到稳定使用，覆盖模型应用、知识检索、流程自动化与工程验证。
         </p>
       </div>
       <div class="ab-toolbox-grid">
@@ -165,6 +192,50 @@ const projects = (
         transparent 60%
       );
   }
+
+  .ab-experience {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px 100px;
+  }
+  .ab-exp-card {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.7fr) 2fr;
+    gap: 34px;
+    padding: clamp(24px, 4vw, 42px);
+    border: 1px solid rgba(27, 25, 18, 0.1);
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.54);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  }
+  .ab-exp-date time {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--font-kanit);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--firefly-deep);
+  }
+  .ab-exp-main h2 {
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.35;
+  }
+  .ab-exp-role {
+    margin-top: 5px;
+    color: var(--firefly-deep);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .ab-exp-main ul {
+    display: grid;
+    gap: 9px;
+    margin: 20px 0 0;
+    padding-left: 1.2em;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .ab-exp-main li::marker { color: var(--firefly-deep); }
   .ab-title {
     font-family: var(--font-kanit);
     font-size: clamp(64px, 15vw, 170px);
@@ -322,6 +393,13 @@ const projects = (
     text-align: center;
     margin-bottom: 48px;
   }
+  .ab-projects-note {
+    max-width: 620px;
+    margin: 16px auto 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
   .ab-projects-title {
     font-family: var(--font-kanit);
     font-size: clamp(40px, 9vw, 96px);
@@ -335,7 +413,7 @@ const projects = (
     max-width: 1000px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 22px;
   }
   .ab-proj-card {
@@ -389,6 +467,40 @@ const projects = (
     text-transform: uppercase;
     margin-top: 2px;
   }
+  .ab-proj-summary {
+    margin: 16px 2px 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .ab-proj-preview {
+    position: relative;
+    overflow: hidden;
+    margin: 18px 0 0;
+    border: 1px solid rgba(27, 25, 18, 0.1);
+    border-radius: 16px;
+    background: #eee9dc;
+    aspect-ratio: 16 / 9;
+  }
+  .ab-proj-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ab-proj-preview figcaption {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 5px 9px;
+    border: 1px solid rgba(27, 25, 18, 0.12);
+    border-radius: 999px;
+    background: rgba(244, 240, 229, 0.88);
+    color: var(--ink-soft);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+  }
   .ab-proj-ghost {
     display: inline-flex;
     align-items: center;
@@ -423,51 +535,6 @@ const projects = (
   .ab-proj-card:hover .ab-proj-ghost-arr {
     transform: translate(2px, -2px);
   }
-  .ab-proj-imgs {
-    display: grid;
-    grid-template-columns: 1.9fr 3.1fr;
-    gap: 14px;
-    margin-top: 18px;
-  }
-  .ab-ph {
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--ink-soft);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    min-height: 88px;
-  }
-  .ab-ph-col {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .ab-ph-a {
-    min-height: 196px;
-  }
-  .ab-ph-b {
-    flex: 1;
-  }
-  .ab-ph-c {
-    flex: 1;
-  }
-  .ab-proj-card:nth-child(1) .ab-ph-a { background: linear-gradient(150deg, #e6f3bc, #f6f1e0); }
-  .ab-proj-card:nth-child(1) .ab-ph-b { background: linear-gradient(150deg, #d7e8f2, #eff3f0); }
-  .ab-proj-card:nth-child(1) .ab-ph-c { background: linear-gradient(150deg, #ead4cc, #f5ebe4); }
-  .ab-proj-card:nth-child(2) .ab-ph-a { background: linear-gradient(150deg, #d9ead6, #f1f4ed); }
-  .ab-proj-card:nth-child(2) .ab-ph-b { background: linear-gradient(150deg, #f1e3bc, #f7f1e2); }
-  .ab-proj-card:nth-child(2) .ab-ph-c { background: linear-gradient(150deg, #dfe0b8, #f2efde); }
-  .ab-proj-card:nth-child(3) .ab-ph-a { background: linear-gradient(150deg, #e8e6f3, #f2f0f6); }
-  .ab-proj-card:nth-child(3) .ab-ph-b { background: linear-gradient(150deg, #f4e8dc, #f6f1e8); }
-  .ab-proj-card:nth-child(3) .ab-ph-c { background: linear-gradient(150deg, #dce8f0, #eef2f2); }
-  .ab-proj-card:nth-child(4) .ab-ph-a { background: linear-gradient(150deg, #f3ded6, #f7efe9); }
-  .ab-proj-card:nth-child(4) .ab-ph-b { background: linear-gradient(150deg, #eae0cc, #f4eee2); }
-  .ab-proj-card:nth-child(4) .ab-ph-c { background: linear-gradient(150deg, #dcebf4, #f2f4f0); }
 
   /* ---------- 联系 ---------- */
   /* ---------- AI 工具链 Toolbox ---------- */
@@ -616,11 +683,14 @@ const projects = (
     .ab-skill-num {
       min-width: 64px;
     }
-    .ab-proj-imgs {
-      grid-template-columns: 1fr;
-    }
-    .ab-ph-a {
-      min-height: 140px;
-    }
+    .ab-experience { padding: 0 18px 70px; }
+    .ab-exp-card { grid-template-columns: 1fr; gap: 22px; }
+    .ab-projects-grid { grid-template-columns: 1fr; max-width: 620px; }
+  }
+
+  .ab-proj-card:focus-visible {
+    outline: 3px solid var(--firefly-deep);
+    outline-offset: 5px;
+    border-radius: 22px;
   }
 </style>

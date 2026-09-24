@@ -2,7 +2,7 @@
 /**
  * ProjectsSection — 首页第 6 区块「项目」（id="projects"）
  * 浅纸背景圆角上拉（margin-top -26px 覆盖夜区块边缘）。
- * eyebrow「Works」→ 大字「项目」→ CardTheater（3D 卡片扇面剧场）。
+ * eyebrow「Works」→ 大字「项目」→ CardTheater（自适应 3D 项目卡片）。
  * 数据来自 content/projects 内容集合（按 num 排序，链到 /projects/[slug] 详情页）。
  */
 import { getCollection } from 'astro:content';
@@ -11,7 +11,7 @@ import CardTheater from '../motion/CardTheater';
 import Eyebrow from '../ui/Eyebrow.astro';
 
 const projects = (
-  await getCollection('projects', ({ data }) => !data.draft)
+  await getCollection('projects', ({ data }) => !data.draft && data.featured)
 )
   .sort((a, b) => a.data.num.localeCompare(b.data.num))
   .map((p) => ({
@@ -21,6 +21,7 @@ const projects = (
     desc: p.data.summary,
     tech: p.data.tech,
     metrics: p.data.metrics,
+    preview: p.data.preview,
     href: `/projects/${p.slug}`,
     images: p.data.images ?? { a: '界面', b: '技术亮点', c: '详情见内页' },
   }));

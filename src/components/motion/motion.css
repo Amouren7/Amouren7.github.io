@@ -286,45 +286,38 @@
 
 /* ---------- CardTheater (3D 卡片剧场) ---------- */
 .ct-wrap {
-  padding: 60px 16px 40px;
+  padding: 44px 16px 40px;
   position: relative;
   display: flex;
   justify-content: center;
 }
 .ct-scene {
   width: 100%;
-  max-width: 1000px;
-  height: 420px;
+  max-width: 1040px;
   perspective: 1200px;
 }
 .ct-deck {
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
   width: 100%;
-  height: 100%;
   transform-style: preserve-3d;
   will-change: transform;
 }
-/* 卡片扇面：中心对称、间距均匀(230px)，Z 分层 + 平面微旋(rotateZ 保持文字水平) */
-/* hover 判定元素(.ct-card)保持静止 → 拈起 transform 移到内层 .ct-shell，避免重叠区 hover 闪烁 */
+/* 用网格承载卡片，保留轻微 3D 深度，避免固定偏移在窄屏越界或项目数变化时重叠。 */
 .ct-card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 250px;
-  height: 330px;
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 390px;
   border-radius: 22px;
   text-decoration: none;
   transform-style: preserve-3d;
-  will-change: transform;
 }
-.c1 { margin: -148px 0 0 -470px; transform: translateZ(0px) rotate(-5deg); }
-.c2 { margin: -170px 0 0 -240px; transform: translateZ(46px) rotate(-1.5deg); }
-.c3 { margin: -174px 0 0 -10px;  transform: translateZ(90px) rotate(1.5deg); }
-.c4 { margin: -148px 0 0 220px;  transform: translateZ(46px) rotate(5deg); }
-/* 拈起：内层 .ct-shell 向前 Z + 转正 + 放大（外层 .ct-card 不动，命中区域稳定） */
-.ct-card:hover { z-index: 20; }
-.ct-card:hover .ct-shell {
-  transform: translateZ(180px) rotate(0deg) scale(1.05);
+.ct-card:focus-visible {
+  z-index: 20;
+  outline: 3px solid var(--firefly-deep);
+  outline-offset: 5px;
 }
 .ct-shell {
   display: block;
@@ -338,13 +331,7 @@
     0 24px 50px -28px rgba(27, 25, 18, 0.5);
   transform-style: preserve-3d;
   will-change: transform;
-  transition: transform 0.7s cubic-bezier(0.32, 0.72, 0, 1), background 0.6s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.6s cubic-bezier(0.32, 0.72, 0, 1);
-}
-.ct-card:hover .ct-shell {
-  background: rgba(143, 191, 11, 0.16);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 34px 70px -26px rgba(27, 25, 18, 0.55);
+  transition: transform 0.55s cubic-bezier(0.32, 0.72, 0, 1), background 0.55s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.55s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .ct-core {
   display: flex;
@@ -361,40 +348,71 @@
 }
 .ct-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+  flex: 0 0 auto;
+}
+.ct-preview {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  height: 88px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(27, 25, 18, 0.1);
+  border-radius: 11px;
+  background: #eeeadf;
+}
+.ct-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ct-preview-label {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 3px 7px;
+  border: 1px solid rgba(27, 25, 18, 0.1);
+  border-radius: 999px;
+  background: rgba(244, 240, 229, 0.9);
+  color: var(--ink-soft);
+  font-size: 8px;
+  letter-spacing: 0.06em;
 }
 .ct-gua {
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 21px;
+  font-size: 17px;
   font-weight: 800;
   background: rgba(188, 240, 27, 0.18);
   color: var(--firefly-deep);
 }
 .ct-num {
   font-family: var(--font-kanit);
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 900;
   line-height: 1;
   color: rgba(27, 25, 18, 0.14);
   transition: color 0.6s cubic-bezier(0.32, 0.72, 0, 1);
 }
-.ct-card:hover .ct-num {
-  color: var(--firefly-deep);
-}
 .ct-core h3 {
-  margin-top: 14px;
+  margin-top: 10px;
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.01em;
   line-height: 1.15;
   color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .ct-cat {
   margin-top: 5px;
@@ -409,13 +427,13 @@
   font-weight: 700;
 }
 .ct-desc {
-  margin-top: 12px;
+  margin-top: 8px;
   font-size: 13px;
   font-weight: 300;
   line-height: 1.6;
   color: var(--ink-soft);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -423,7 +441,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 12px;
+  margin-top: 9px;
 }
 .ct-tech > span {
   font-family: var(--font-kanit);
@@ -445,7 +463,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  padding: 5px 5px 5px 15px;
+  padding: 4px 4px 4px 12px;
   border-radius: 999px;
   border: 1px solid rgba(27, 25, 18, 0.2);
   font-family: var(--font-kanit);
@@ -456,42 +474,48 @@
   color: var(--ink);
 }
 .ct-ghost .ct-arr {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: rgba(188, 240, 27, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  transition: transform 0.7s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.55s cubic-bezier(0.32, 0.72, 0, 1);
 }
-.ct-card:hover .ct-arr {
-  transform: translate(2px, -2px);
+.ct-card:focus-visible .ct-shell {
+  transform: translateZ(42px) scale(1.025);
+  background: rgba(143, 191, 11, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 30px 64px -26px rgba(27, 25, 18, 0.48);
+}
+.ct-card:focus-visible .ct-num { color: var(--firefly-deep); }
+.ct-card:focus-visible .ct-arr { transform: translate(2px, -2px); }
+@media (hover: hover) and (pointer: fine) {
+  .ct-card:hover { z-index: 20; }
+  .ct-card:hover .ct-shell {
+    transform: translateZ(42px) scale(1.025);
+    background: rgba(143, 191, 11, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 30px 64px -26px rgba(27, 25, 18, 0.48);
+  }
+  .ct-card:hover .ct-num { color: var(--firefly-deep); }
+  .ct-card:hover .ct-arr { transform: translate(2px, -2px); }
 }
 
-/* 移动端：垂直堆叠，无 3D 扇面 */
+/* 平板两列、移动端单列，卡片数量变化时仍按网格自然排布。 */
+@media (max-width: 960px) {
+  .ct-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 700px) {
   .ct-scene {
-    height: auto;
     perspective: none;
-    flex-direction: column;
-    gap: 18px;
   }
   .ct-deck {
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
+    grid-template-columns: minmax(0, 1fr);
     transform: none !important;
   }
   .ct-card {
-    position: static;
-    width: 100%;
-    max-width: 420px;
-    height: auto;
-    margin: 0 !important;
+    height: 370px;
     transform: none !important;
   }
 }

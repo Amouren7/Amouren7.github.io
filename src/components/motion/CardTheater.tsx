@@ -20,6 +20,11 @@ interface ProjectCard {
   desc: string;
   tech: string[];
   metrics: Metric[];
+  preview?: {
+    src: string;
+    alt: string;
+    caption: string;
+  };
   href?: string;
 }
 
@@ -35,13 +40,12 @@ function extractGua(cat: string): string {
 }
 
 /**
- * CardTheater — 项目 3D 卡片剧场（替换 sticky 叠卡）
- * - 卡片排成 3D 扇面：每张在不同 translateZ + rotateY 微旋，perspective 透视
- * - 鼠标在扇面上移动：整副 rotateX/rotateY 弹簧视差
- * - 悬停拈起：单卡向观众 translateZ 前移 + 转正 + 放大（CSS transition）
- * - 整卡可点击 → /projects/[slug] 详情页（求职作品集功能保留）
+ * CardTheater — 响应式 3D 项目卡片
+ * - 网格自动适应卡片数量和屏幕宽度，桌面保留轻量透视
+ * - 鼠标移动驱动整组卡片的弹簧视差，触屏不绑定伪 hover
+ * - 键盘聚焦与鼠标悬停都有可见反馈
+ * - 减少动态效果偏好下停用 3D 倾斜和入场位移
  * - 入场：每卡 opacity + y 错峰浮现（whileInView，符合只 transform/opacity）
- * - 移动端（≤700px）：垂直堆叠，无 3D
  */
 export default function CardTheater({ cards }: CardTheaterProps) {
   const reduced = useReducedMotion() ?? false;
@@ -51,12 +55,14 @@ export default function CardTheater({ cards }: CardTheaterProps) {
   const sry = useSpring(ry, { stiffness: 120, damping: 20, mass: 0.8 });
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  function onMove(e: React.MouseEvent<HTMLDivElement>) {
+  function onMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.pointerType !== 'mouse' || e.buttons !== 0 || reduced) return;
     const el = e.currentTarget.getBoundingClientRect();
+    if (!el.width || !el.height) return;
     const px = (e.clientX - el.left) / el.width - 0.5;
     const py = (e.clientY - el.top) / el.height - 0.5;
-    ry.set(px * 16);
-    rx.set(-py * 10);
+    ry.set(px * 12);
+    rx.set(-py * 8);
   }
   function onLeave() {
     rx.set(0);
@@ -69,8 +75,9 @@ export default function CardTheater({ cards }: CardTheaterProps) {
         <div
           className="ct-scene"
           ref={wrapRef}
-          onMouseMove={onMove}
-          onMouseLeave={onLeave}
+          onPointerMove={onMove}
+          onPointerLeave={onLeave}
+          role="region"
           aria-label="项目作品集"
         >
           <motion.div
@@ -80,22 +87,34 @@ export default function CardTheater({ cards }: CardTheaterProps) {
             {cards.map((card, i) => (
               <motion.a
                 key={card.num}
-                className={`ct-card c${i + 1}`}
+                className="ct-card"
                 href={card.href}
                 aria-label={`查看项目：${card.title}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                style={{
+                  z: reduced ? 0 : [12, 32, 52, 32][i % 4],
+                  rotateZ: reduced ? 0 : [-1.6, -0.5, 0.5, 1.6][i % 4],
+                }}
+                initial={reduced ? false : { opacity: 0, y: 24 }}
+                whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1], delay: i * 0.1 }}
               >
-                <span className="ct-shell">
-                  <span className="ct-core">
-                    <span className="ct-gua" aria-hidden="true">
-                      {extractGua(card.cat)}
-                    </span>
-                    <span className="ct-num" aria-hidden="true">
-                      {card.num}
-                    </span>
+                <div className="ct-shell">
+                  <div className="ct-core">
+                    <div className="ct-top">
+                      <span className="ct-gua" aria-hidden="true">
+                        {extractGua(card.cat)}
+                      </span>
+                      <span className="ct-num" aria-hidden="true">
+                        {card.num}
+                      </span>
+                    </div>
+                    {card.preview && (
+                      <span className="ct-preview" aria-hidden="true">
+                        <img src={card.preview.src} alt="" loading="lazy" decoding="async" />
+                        <span className="ct-preview-label">示意画面</span>
+                      </span>
+                    )}
                     <h3>{card.title}</h3>
                     <span
                       className="ct-cat"
@@ -112,8 +131,8 @@ export default function CardTheater({ cards }: CardTheaterProps) {
                         查看详情 <span className="ct-arr">↗</span>
                       </span>
                     </span>
-                  </span>
-                </span>
+                  </div>
+                </div>
               </motion.a>
             ))}
           </motion.div>

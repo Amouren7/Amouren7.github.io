@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { MotionConfig, animate, motion, useMotionValue } from 'framer-motion';
+import { MotionConfig, motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
 import './motion.css';
 
 interface MagneticButtonProps {
@@ -24,16 +24,20 @@ export default function MagneticButton({
   className = '',
 }: MagneticButtonProps) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  const reduced = useReducedMotion() ?? false;
+  const targetX = useMotionValue(0);
+  const targetY = useMotionValue(0);
+  const x = useSpring(targetX, { stiffness: 220, damping: 26, mass: 0.45 });
+  const y = useSpring(targetY, { stiffness: 220, damping: 26, mass: 0.45 });
 
   const returnToCenter = useCallback(() => {
-    animate(x, 0, { type: 'tween', duration: 0.6, ease: EASE_OUT });
-    animate(y, 0, { type: 'tween', duration: 0.6, ease: EASE_OUT });
-  }, [x, y]);
+    targetX.set(0);
+    targetY.set(0);
+  }, [targetX, targetY]);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLAnchorElement>) => {
+      if (reduced || e.pointerType !== 'mouse' || e.buttons !== 0) return;
       const el = ref.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
@@ -43,14 +47,14 @@ export default function MagneticButton({
       const ny = relY / (rect.height / 2 + 80);
       if (Math.abs(nx) > 1 || Math.abs(ny) > 1) {
         // 已离开磁吸范围 → 缓动归位
-        if (x.get() !== 0 || y.get() !== 0) returnToCenter();
+        if (targetX.get() !== 0 || targetY.get() !== 0) returnToCenter();
         return;
       }
       // strength ≈ 5
-      animate(x, nx * 5, { type: 'tween', duration: 0.3, ease: 'easeOut' });
-      animate(y, ny * 5, { type: 'tween', duration: 0.3, ease: 'easeOut' });
+      targetX.set(nx * 5);
+      targetY.set(ny * 5);
     },
-    [x, y, returnToCenter],
+    [reduced, targetX, targetY, returnToCenter],
   );
 
   return (
@@ -59,9 +63,9 @@ export default function MagneticButton({
         ref={ref}
         href={href}
         className={`cta-btn ${className}`.trim()}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={returnToCenter}
-        style={{ x, y }}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={returnToCenter}
+        style={{ x: reduced ? 0 : x, y: reduced ? 0 : y }}
         initial="rest"
         whileHover="hover"
         whileTap={{ scale: 0.97 }}

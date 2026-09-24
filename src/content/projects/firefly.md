@@ -1,6 +1,6 @@
 ---
 title: Firefly 虚拟人
-num: "01"
+num: "04"
 cat: "<b>☲ 火</b> · AI Application"
 summary: 基于 DeepSeek + Vue3 + FastAPI 的 AI 陪伴聊天虚拟人：流式打字机对话、多轮上下文管理、敏感信息过滤，能像朋友一样记住聊过的内容。
 tech: [DeepSeek, Vue3, FastAPI, SSE 流式]
@@ -15,6 +15,11 @@ images:
   a: 对话界面
   b: 数据看板
   c: DeepSeek + Vue3 陪伴聊天
+preview:
+  src: /images/projects/firefly-demo.svg
+  alt: Firefly AI 对话应用的脱敏示意界面，消息内容为合成示例
+  caption: 独立项目示意 · 合成内容
+featured: true
 draft: false
 ---
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MotionConfig, motion, useMotionValue, useSpring } from 'framer-motion';
+import { MotionConfig, motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
 import './motion.css';
 
 /** 十二地支（顺时针，子起于正上方） */
@@ -34,13 +34,16 @@ const SPRING = { stiffness: 150, damping: 20, mass: 0.7 };
  * - 移动端 scale(.68)，无鼠标不触发倾斜
  */
 export default function CompassWheel() {
+  const reduced = useReducedMotion() ?? false;
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
   const srx = useSpring(rx, SPRING);
   const sry = useSpring(ry, SPRING);
 
-  function onMove(e: React.MouseEvent<HTMLDivElement>) {
+  function onMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.pointerType !== 'mouse' || reduced) return;
     const el = e.currentTarget.getBoundingClientRect();
+    if (!el.width || !el.height) return;
     const px = (e.clientX - el.left) / el.width - 0.5;
     const py = (e.clientY - el.top) / el.height - 0.5;
     ry.set(px * 18);
@@ -56,9 +59,9 @@ export default function CompassWheel() {
       <div className="wheel" style={{ width: W, height: W }}>
         <motion.div
           className="wheel-tilt"
-          style={{ rotateX: srx, rotateY: sry, transformStyle: 'preserve-3d' }}
-          onMouseMove={onMove}
-          onMouseLeave={onLeave}
+          style={{ rotateX: reduced ? 0 : srx, rotateY: reduced ? 0 : sry, transformStyle: 'preserve-3d' }}
+          onPointerMove={onMove}
+          onPointerLeave={onLeave}
         >
           <div className="cw-z" style={{ transform: 'translateZ(18px)' }}>
             <div className="cw-ring-static" aria-hidden="true" />
@@ -67,7 +70,7 @@ export default function CompassWheel() {
             <motion.div
               className="cw-ring-rot"
               aria-hidden="true"
-              animate={{ rotate: 360 }}
+              animate={reduced ? undefined : { rotate: 360 }}
               transition={{ duration: 46, repeat: Infinity, ease: 'linear' }}
             />
           </div>
@@ -75,7 +78,7 @@ export default function CompassWheel() {
             <motion.div
               className="cw-ring-rot2"
               aria-hidden="true"
-              animate={{ rotate: -360 }}
+              animate={reduced ? undefined : { rotate: -360 }}
               transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
             />
           </div>
@@ -107,7 +110,7 @@ export default function CompassWheel() {
             <motion.div
               className="cw-glow"
               aria-hidden="true"
-              animate={{ opacity: [0.45, 0.9, 0.45], scale: [1, 1.18, 1] }}
+              animate={reduced ? undefined : { opacity: [0.45, 0.9, 0.45], scale: [1, 1.18, 1] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: [0.32, 0.72, 0, 1] }}
             />
           </div>

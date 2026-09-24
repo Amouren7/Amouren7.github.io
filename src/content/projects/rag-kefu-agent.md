@@ -1,6 +1,6 @@
 ---
 title: RAG 客服 Agent
-num: "02"
+num: "03"
 cat: "<b>☵ 水</b> · AI Agent"
 summary: 电商售后知识库检索增强 Agent：标题感知分块 + 口语问题改写 + 来源引用标注，让 AI 的回答有据可查、可溯源。
 tech: [RAG, Embedding, FastAPI, 评测闭环]
@@ -15,6 +15,11 @@ images:
   a: 检索链路
   b: 知识库
   c: 电商智能问答系统
+preview:
+  src: /images/projects/rag-agent-demo.svg
+  alt: RAG 知识问答的脱敏示意界面，问题、回答和引用来源均为合成示例
+  caption: 问答界面 · 合成数据
+featured: true
 draft: false
 ---
 

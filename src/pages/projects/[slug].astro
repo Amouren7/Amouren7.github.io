@@ -21,7 +21,7 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
-const { title, num, cat, summary, tech, metrics, links } = project.data;
+const { title, num, cat, summary, tech, metrics, links, preview } = project.data;
 ---
 <PageLayout title={`${title} · ${SITE.name}`} description={summary} active="项目">
   <article class="proj-page">
@@ -37,6 +37,13 @@ const { title, num, cat, summary, tech, metrics, links } = project.data;
     </header>
 
     <p class="proj-summary">{summary}</p>
+
+    {preview && (
+      <figure class="proj-preview">
+        <img src={preview.src} alt={preview.alt} fetchpriority="high" decoding="async" />
+        <figcaption>{preview.caption}</figcaption>
+      </figure>
+    )}
 
     <div class="proj-tech">
       {tech.map((t) => (
@@ -142,6 +149,35 @@ const { title, num, cat, summary, tech, metrics, links } = project.data;
     line-height: 1.8;
     color: var(--ink);
     max-width: 640px;
+  }
+
+  .proj-preview {
+    position: relative;
+    overflow: hidden;
+    margin: 24px 0 0;
+    border: 1px solid rgba(27, 25, 18, 0.12);
+    border-radius: 20px;
+    background: #eee9dc;
+    aspect-ratio: 16 / 9;
+  }
+  .proj-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .proj-preview figcaption {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    max-width: calc(100% - 24px);
+    padding: 6px 11px;
+    border: 1px solid rgba(27, 25, 18, 0.12);
+    border-radius: 999px;
+    background: rgba(244, 240, 229, 0.9);
+    color: var(--ink-soft);
+    font-size: 11px;
+    backdrop-filter: blur(8px);
   }
 
   .proj-tech {

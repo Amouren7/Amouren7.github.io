@@ -32,6 +32,14 @@ const projects = defineCollection({
     images: z
       .object({ a: z.string(), b: z.string(), c: z.string() })
       .optional(),
+    preview: z
+      .object({
+        src: z.string(),
+        alt: z.string(),
+        caption: z.string(),
+      })
+      .optional(),
+    featured: z.boolean().optional().default(false),
     links: z
       .object({
         github: z.string().url().optional(),

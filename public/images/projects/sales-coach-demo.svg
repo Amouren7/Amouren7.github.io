@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">AI 销售对话引导助手示意界面</title>
+  <desc id="desc">使用合成示例信息展示对话区、需求摘要与下一步建议的脱敏演示画面。</desc>
+  <defs>
+    <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#faf8f1"/><stop offset="1" stop-color="#eee9dc"/></linearGradient>
+    <linearGradient id="green" x2="1" y2="1"><stop stop-color="#c9f33b"/><stop offset="1" stop-color="#9acb18"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#29271c" flood-opacity=".11"/></filter>
+  </defs>
+  <rect width="1440" height="900" rx="34" fill="url(#paper)"/>
+  <rect x="32" y="32" width="1376" height="836" rx="25" fill="#fffdf8" stroke="#ded9cb"/>
+  <rect x="32" y="32" width="1376" height="76" rx="25" fill="#22241d"/>
+  <path d="M32 83h1376v25H32z" fill="#22241d"/>
+  <circle cx="68" cy="70" r="9" fill="#c4eb39"/><text x="91" y="76" fill="#f8f5e8" font-size="20" font-family="Arial,sans-serif" font-weight="700" letter-spacing="2">FIELDNOTE / SALES COPILOT</text>
+  <rect x="1207" y="52" width="160" height="36" rx="18" fill="#383a30"/><circle cx="1230" cy="70" r="5" fill="#c4eb39"/><text x="1244" y="75" fill="#e9e7dc" font-size="13" font-family="Arial,sans-serif" letter-spacing="1">SYNTHETIC DEMO</text>
+  <rect x="52" y="130" width="80" height="716" rx="18" fill="#f2efe5"/>
+  <rect x="71" y="158" width="42" height="42" rx="14" fill="url(#green)"/><path d="M83 178h18M92 169v18" stroke="#263019" stroke-width="3" stroke-linecap="round"/>
+  <rect x="72" y="229" width="40" height="40" rx="13" fill="#282a22"/><path d="M84 244h17M84 252h12" stroke="#d6e49a" stroke-width="2.2" stroke-linecap="round"/>
+  <rect x="72" y="289" width="40" height="40" rx="13" fill="#e4e0d5"/><circle cx="92" cy="309" r="9" fill="none" stroke="#807d71" stroke-width="2"/><path d="m99 316 7 7" stroke="#807d71" stroke-width="2"/>
+  <text x="166" y="165" fill="#77756b" font-size="14" font-family="Arial,sans-serif" letter-spacing="3">AI ASSISTED CONVERSATION</text>
+  <text x="166" y="210" fill="#25261f" font-size="34" font-family="Arial,sans-serif" font-weight="700">销售对话引导</text>
+  <text x="166" y="244" fill="#77756b" font-size="17" font-family="Arial,sans-serif">整理当前沟通重点，给出清晰、可执行的下一步。</text>
+  <rect x="1129" y="142" width="220" height="44" rx="22" fill="#f0eee5" stroke="#dedace"/><circle cx="1153" cy="164" r="6" fill="#79a70d"/><text x="1170" y="170" fill="#55564c" font-size="14" font-family="Arial,sans-serif">演示会话 · 合成内容</text>
+  <rect x="165" y="278" width="736" height="523" rx="22" fill="#fff" stroke="#e5e1d7" filter="url(#shadow)"/>
+  <text x="198" y="321" fill="#77756b" font-size="13" font-family="Arial,sans-serif" letter-spacing="2">CONVERSATION</text>
+  <circle cx="216" cy="372" r="18" fill="#eeeadd"/><text x="209" y="378" fill="#706d60" font-size="14" font-family="Arial,sans-serif" font-weight="700">客</text>
+  <rect x="246" y="347" width="518" height="66" rx="17" fill="#f3f1eb"/><text x="269" y="374" fill="#35362f" font-size="16" font-family="Arial,sans-serif">想了解一下礼盒包装，具体规格还在考虑。</text><text x="269" y="397" fill="#8b887d" font-size="12" font-family="Arial,sans-serif">示例消息 · 无真实客户信息</text>
+  <circle cx="216" cy="463" r="18" fill="#22241d"/><text x="209" y="469" fill="#d5ed78" font-size="14" font-family="Arial,sans-serif" font-weight="700">我</text>
+  <rect x="246" y="438" width="555" height="67" rx="17" fill="#e9f2cf"/><text x="269" y="465" fill="#34392a" font-size="16" font-family="Arial,sans-serif">可以，我们先把使用场景和大致规格确认清楚。</text><text x="269" y="489" fill="#777b68" font-size="12" font-family="Arial,sans-serif">建议回复 · 草稿，发送前由业务员确认</text>
+  <rect x="197" y="542" width="672" height="1" fill="#ece9e0"/>
+  <rect x="197" y="564" width="672" height="104" rx="15" fill="#fbfaf6" stroke="#e8e4d9"/><text x="218" y="592" fill="#7d7b71" font-size="12" font-family="Arial,sans-serif" letter-spacing="1">回复草稿</text><text x="218" y="623" fill="#37382f" font-size="15" font-family="Arial,sans-serif">先确认礼盒用途、尺寸范围和预估数量，再核对适用方案。</text><text x="218" y="649" fill="#878478" font-size="12" font-family="Arial,sans-serif">信息不足时保留待确认，不自动承诺价格或交期。</text>
+  <rect x="198" y="698" width="154" height="44" rx="22" fill="url(#green)"/><text x="223" y="726" fill="#263019" font-size="14" font-family="Arial,sans-serif" font-weight="700">复制建议回复</text>
+  <rect x="925" y="278" width="424" height="523" rx="22" fill="#25271f" filter="url(#shadow)"/>
+  <text x="960" y="322" fill="#c4eb39" font-size="13" font-family="Arial,sans-serif" letter-spacing="2">CURRENT CONTEXT</text>
+  <text x="960" y="362" fill="#f8f6ec" font-size="22" font-family="Arial,sans-serif" font-weight="700">沟通摘要</text>
+  <rect x="959" y="384" width="355" height="98" rx="16" fill="#313329"/><text x="983" y="414" fill="#a9aa9d" font-size="12" font-family="Arial,sans-serif">已表达</text><text x="983" y="445" fill="#f2f0e6" font-size="16" font-family="Arial,sans-serif">咨询礼盒包装方案</text><text x="983" y="468" fill="#a9aa9d" font-size="12" font-family="Arial,sans-serif">规格尚未确认</text>
+  <text x="960" y="530" fill="#c4eb39" font-size="13" font-family="Arial,sans-serif" letter-spacing="2">NEXT STEP</text>
+  <rect x="959" y="548" width="355" height="119" rx="16" fill="#34382a" stroke="#57613b"/><circle cx="986" cy="579" r="11" fill="url(#green)"/><path d="m981 579 4 4 7-8" fill="none" stroke="#29321c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="1010" y="584" fill="#f3f2e9" font-size="16" font-family="Arial,sans-serif" font-weight="700">先确认关键需求</text><text x="982" y="618" fill="#c4c5b8" font-size="13" font-family="Arial,sans-serif">用途 · 尺寸 · 预估数量</text><text x="982" y="643" fill="#9da08e" font-size="12" font-family="Arial,sans-serif">由业务员结合实际情况核对</text>
+  <rect x="959" y="691" width="355" height="73" rx="15" fill="#2d2f27"/><text x="982" y="719" fill="#aeb09f" font-size="12" font-family="Arial,sans-serif">工作原则</text><text x="982" y="743" fill="#eceadf" font-size="13" font-family="Arial,sans-serif">有依据 · 不重复 · 人工确认</text>
+  <text x="166" y="838" fill="#908d80" font-size="12" font-family="Arial,sans-serif" letter-spacing="1">ALL NAMES, MESSAGES AND FIELDS SHOWN ARE SYNTHETIC</text>
+</svg>
