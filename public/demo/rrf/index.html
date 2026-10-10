@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RRF 混合检索演示 · 姜高辉</title>
+<style>
+  :root{
+    --paper:#F4F0E5; --ink:#161512; --ink-soft:#4a463c;
+    --green:#BCF01B; --green-ink:#4E7000; --vermilion:#C0392B;
+    --line:#d9d2bf; --card:#fffdf7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:15px/1.7 "PingFang SC","Microsoft YaHei",system-ui,sans-serif;}
+  a{color:var(--green-ink)}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+  .top{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:22px}
+  .top b{font-size:17px;letter-spacing:.02em}
+  .top span{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.14em}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:.01em}
+  .sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 20px}
+  .note{background:#fff8e6;border-left:3px solid var(--vermilion);
+    padding:12px 14px;font-size:13px;color:#5a4a2a;margin:0 0 22px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;margin-bottom:18px}
+  label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--ink-soft);margin-bottom:6px}
+  input[type=text]{width:100%;padding:11px 12px;font-size:15px;font-family:inherit;
+    border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  input[type=text]:focus{outline:2px solid var(--green);border-color:var(--green)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{cursor:pointer;font-size:12.5px;padding:5px 11px;border:1px solid var(--line);
+    border-radius:999px;background:#fff;color:var(--ink-soft)}
+  .chip:hover{border-color:var(--green);background:var(--green);color:#213000}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  h2{font-size:14px;margin:0 0 10px;letter-spacing:.06em}
+  h2 em{font-style:normal;font-weight:400;font-size:11.5px;color:var(--ink-soft);
+    letter-spacing:.06em;margin-left:6px}
+  ol.rank{margin:0;padding:0;list-style:none}
+  ol.rank li{display:flex;gap:10px;align-items:baseline;padding:7px 0;
+    border-bottom:1px dashed var(--line);font-size:13.5px}
+  ol.rank li:last-child{border-bottom:0}
+  .rk{min-width:22px;height:22px;border-radius:6px;background:#eee7d5;color:var(--ink-soft);
+    display:inline-flex;align-items:center;justify-content:center;font-size:11.5px;
+    font-weight:700;flex:0 0 auto}
+  .doc{flex:1}
+  .sc{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+    color:var(--ink-soft);white-space:nowrap}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;
+    vertical-align:top}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);
+    font-weight:600}
+  td.num,th.num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right;
+    white-space:nowrap}
+  tr.hit td{background:#f2fbd8}
+  tr.hit td:first-child{border-left:3px solid var(--green-ink)}
+  .total{font-weight:700;color:var(--green-ink)}
+  .krow{display:flex;align-items:center;gap:12px;margin-top:12px;font-size:13px;
+    color:var(--ink-soft)}
+  input[type=range]{flex:1;max-width:320px;accent-color:var(--green-ink)}
+  code{background:#eee7d5;padding:1px 5px;border-radius:4px;font-size:12.5px}
+  footer{margin-top:26px;font-size:12.5px;color:var(--ink-soft);
+    border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <b>A某人 · 姜高辉</b>
+    <span>RRF Hybrid Retrieval · Demo</span>
+  </div>
+
+  <h1>RRF 混合检索演示</h1>
+  <p class="sub">
+    这是我在 <a href="https://github.com/Amouren7/Amou_RAG_project" target="_blank" rel="noopener">Amou_rag_project</a>
+    里做的中文混合检索的<b>融合步骤</b>：向量召回与关键词召回各出一份排名，
+    再用 RRF（Reciprocal Rank Fusion）合成最终顺序。此页把这一步搬到浏览器里实时跑。
+  </p>
+
+  <div class="note">
+    <b>诚实说明：</b>本页只演示 <b>RRF 融合逻辑</b>，不连接任何后端。
+    两条召回路在浏览器内用<b>简化算法近似</b>——
+    「向量路」用字符二元组余弦相似度近似语义相似度，
+    「关键词路」用连续子串命中近似 <code>pg_trgm</code>／<code>ILIKE</code>。
+    真实系统里这两路分别来自 <b>pgvector</b> 与 <b>pg_trgm</b>，融合公式与本页完全一致。
+  </div>
+
+  <div class="panel">
+    <label for="q">查询</label>
+    <input id="q" type="text" value="退货要多久能到" autocomplete="off">
+    <div class="chips" id="chips"></div>
+    <div class="krow">
+      <span>RRF 常数 k = <b id="kv">60</b></span>
+      <input id="k" type="range" min="1" max="100" value="60">
+      <span>k 越小，排名靠前的结果优势越大</span>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <h2>① 向量召回<em>字符二元组余弦（近似语义）</em></h2>
+      <ol class="rank" id="vec"></ol>
+    </div>
+    <div class="panel">
+      <h2>② 关键词召回<em>连续子串命中（近似 pg_trgm）</em></h2>
+      <ol class="rank" id="kw"></ol>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>③ RRF 融合结果<em>score = Σ 1 / (k + rank)</em></h2>
+    <table>
+      <thead>
+        <tr>
+          <th>最终</th><th>文档</th>
+          <th class="num">向量名次</th><th class="num">关键词名次</th>
+          <th class="num">贡献</th><th class="num">RRF 分</th>
+        </tr>
+      </thead>
+      <tbody id="fused"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    语料为脱敏的电商售后问答样例（8 条），不包含任何真实客户信息。<br>
+    对应实现：<code>Amou_rag_project</code> 的混合检索与离线评测（Recall@K / MRR / 引用覆盖率）。
+  </footer>
+
+</div>
+
+<script>
+// ---- 脱敏语料：电商售后知识库样例 --------------------------------------
+const DOCS = [
+  { id:'D1', t:'退货申请提交后，仓库签收并质检通过，退款一般在 3-5 个工作日原路退回；超时未到账可联系客服核查。' },
+  { id:'D2', t:'换货需要保持商品吊牌完整、不影响二次销售，换货往返物流时间通常为 5-7 天。' },
+  { id:'D3', t:'订单发货后可在订单详情查看物流轨迹；若 48 小时无揽收记录，可申请催发或直接取消。' },
+  { id:'D4', t:'发票支持电子发票与纸质专票，电子发票在确认收货后自动开具并发送到预留邮箱。' },
+  { id:'D5', t:'商品质量问题请在签收后 7 天内提交凭证照片，审核通过后运费由商家承担。' },
+  { id:'D6', t:'预售商品以页面标注的发货时间为准，定金不退但可转为同店铺其他商品的抵扣。' },
+  { id:'D7', t:'会员积分在下单支付成功后到账，退款时按比例扣回，积分有效期为 12 个月。' },
+  { id:'D8', t:'地址填错可在未发货前自行修改；已发货则需联系快递拦截，拦截成功率视物流节点而定。' }
+];
+
+// ---- 两条召回路：浏览器内简化近似 --------------------------------------
+const bigrams = s => {
+  const clean = (s||'').replace(/[\s，。；：、！？,.!?;:]/g,'');
+  const out = [];
+  for (let i=0;i<clean.length-1;i++) out.push(clean.slice(i,i+2));
+  return out;
+};
+
+const TOPK = 5;   // 每条召回路只取 top-K，未召回的不进入融合
+
+function vectorRank(q){
+  const qb = bigrams(q), qset = new Set(qb);
+  const scores = DOCS.map(d => {
+    const db = bigrams(d.t);
+    let inter = 0;
+    const seen = new Set();
+    for (const g of db){ if (qset.has(g) && !seen.has(g)) { inter++; seen.add(g); } }
+    const cos = inter / Math.sqrt((qset.size||1) * (new Set(db).size||1));
+    return { d, s: cos };
+  });
+  scores.sort((a,b) => b.s - a.s);
+  // 只有真正召回（分 > 0）的结果才进入融合；真实系统同样是 top-K 候选参与融合
+  return scores.filter(x => x.s > 0).slice(0, TOPK).map(x => ({ id:x.d.id, s:x.s }));
+}
+
+function keywordRank(q){
+  // 连续子串命中长度求和，近似 pg_trgm 的关键词召回强度
+  const clean = (q||'').replace(/[\s，。；：、！？,.!?;:]/g,'');
+  const grams = [];
+  for (let n=Math.min(4,clean.length); n>=2; n--)
+    for (let i=0;i+n<=clean.length;i++) grams.push(clean.slice(i,i+n));
+  const uniq = [...new Set(grams)];
+  const scores = DOCS.map(d => {
+    let s = 0;
+    for (const g of uniq) if (d.t.includes(g)) s += g.length;   // 长命中权重更高
+    return { id:d.id, s };
+  });
+  scores.sort((a,b) => b.s - a.s);
+  return scores.filter(x => x.s > 0).slice(0, TOPK).map(x => ({ id:x.id, s:x.s }));
+}
+
+const docText = id => (DOCS.find(d => d.id === id) || {}).t || '';
+
+function fusion(vec, kw, k){
+  const all = new Set([...vec.map(x=>x.id), ...kw.map(x=>x.id)]);
+  const rows = [];
+  for (const id of all){
+    const vi = vec.findIndex(x => x.id === id);
+    const ki = kw.findIndex(x => x.id === id);
+    const vr = vi >= 0 ? vi + 1 : null;
+    const kr = ki >= 0 ? ki + 1 : null;
+    const cv = vr ? 1/(k+vr) : 0;
+    const ck = kr ? 1/(k+kr) : 0;
+    rows.push({ id, vr, kr, cv, ck, score: cv + ck });
+  }
+  rows.sort((a,b) => b.score - a.score || a.id.localeCompare(b.id));
+  return rows;
+}
+
+// ---- 渲染 ---------------------------------------------------------------
+const $ = s => document.querySelector(s);
+const fmt = v => v.toFixed(4);
+const rkBadge = n => `<span class="rk">${n}</span>`;
+
+function renderList(el, arr, scoreLabel){
+  if (!arr.length){ el.innerHTML = '<li style="color:#8a8375">未召回任何文档</li>'; return; }
+  el.innerHTML = arr.map((x,i) =>
+    `<li>${rkBadge(i+1)}<span class="doc">${docText(x.id)}</span>
+     <span class="sc">${x.id} · ${scoreLabel}${x.s.toFixed(3)}</span></li>`).join('');
+}
+
+function renderFused(rows){
+  if (!rows.length){
+    $('#fused').innerHTML = '<tr><td colspan="6" style="color:#8a8375">两条召回路都没有命中，RRF 无输入</td></tr>';
+    return;
+  }
+  $('#fused').innerHTML = rows.map((r,i) => `
+    <tr class="${i===0?'hit':''}">
+      <td>${i+1}</td>
+      <td>${docText(r.id)}<br><span class="sc">${r.id}</span></td>
+      <td class="num">${r.vr ?? '—'}</td>
+      <td class="num">${r.kr ?? '—'}</td>
+      <td class="num">${fmt(r.cv)} + ${fmt(r.ck)}</td>
+      <td class="num total">${fmt(r.score)}</td>
+    </tr>`).join('');
+}
+
+function run(){
+  const q = $('#q').value.trim();
+  const k = parseInt($('#k').value, 10);
+  $('#kv').textContent = k;
+  const vec = vectorRank(q), kw = keywordRank(q);
+  renderList($('#vec'), vec, 'cos=');
+  renderList($('#kw'), kw, 'hit=');
+  renderFused(fusion(vec, kw, k));
+}
+
+// 示例查询
+const EX = ['退货要多久能到','发票怎么开','物流一直没有揽收','修改收货地址','积分退款会扣吗'];
+$('#chips').innerHTML = EX.map(t => `<span class="chip" data-q="${t}">${t}</span>`).join('');
+$('#chips').addEventListener('click', e => {
+  const q = e.target.getAttribute('data-q');
+  if (q){ $('#q').value = q; run(); }
+});
+$('#q').addEventListener('input', run);
+$('#k').addEventListener('input', run);
+run();
+</script>
+</body>
+</html>
