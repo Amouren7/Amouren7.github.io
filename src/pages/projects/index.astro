@@ -1,0 +1,314 @@
+---
+/**
+ * 作品集索引页 — /projects
+ *
+ * 为什么需要这一页：
+ *   简历与投递邮件里给出的「作品集」链接需要落到一个「只讲工程」的页面。
+ *   首页同时承载玄学命理与生活栏目，招聘方点进来容易被无关内容分散注意力；
+ *   内页项目详情（/projects/[slug]）此前没有索引，只能从首页卡片进入。
+ *
+ * 内容范围：只列出 AI / 工程类项目（白名单，见 AI_SLUGS）。
+ * 「终南逸士 命理体系」属于个人兴趣栏目，不在求职作品集范围内，故排除。
+ */
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Eyebrow from '../../components/ui/Eyebrow.astro';
+import { SITE } from '../../config';
+
+/** 求职作品集范围：按 slug 白名单，避免命理等非工程内容混入 */
+const AI_SLUGS = [
+  'sales-coach',
+  'customer-entry-assistant',
+  'rag-kefu-agent',
+  'firefly',
+  'jobmate',
+];
+
+const all = await getCollection('projects', ({ data }) => !data.draft);
+const projects = AI_SLUGS
+  .map((slug) => all.find((p) => p.slug === slug))
+  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+
+const DEMO = 'https://amouren7.github.io/demo/rrf/';
+const GITHUB = 'https://github.com/Amouren7';
+
+const isNew = (slug: string) => slug === 'rag-kefu-agent';
+---
+
+<PageLayout
+  title={`作品集 · ${SITE.name}`}
+  description="AI 应用落地作品集：印刷包装销售对话助手、客户信息录入助手、RAG 知识问答、Firefly 对话与求职工作流。含技术栈、关键指标与在线演示。"
+  active="项目"
+>
+  <div class="pf">
+    <header class="pf-head">
+      <Eyebrow text="Portfolio · 作品集" />
+      <h1 class="pf-title">AI 应用落地作品集</h1>
+      <p class="pf-lead">
+        以下项目来自真实业务场景与个人实践：从流程调研、方案设计、编码实现，到自动化回归、
+        云端部署与试点迭代。每个案例都标注了技术栈与可核验的指标；界面截图均为脱敏示意，
+        数据为合成示例。
+      </p>
+      <div class="pf-actions">
+        <a class="pf-btn pf-btn--primary" href={DEMO} target="_blank" rel="noreferrer">
+          可交互演示 · RRF 混合检索 ↗
+        </a>
+        <a class="pf-btn" href={GITHUB} target="_blank" rel="noreferrer">GitHub ↗</a>
+      </div>
+    </header>
+
+    <ul class="pf-list">
+      {
+        projects.map((p) => (
+          <li class="pf-item">
+            <a class="pf-card" href={`/projects/${p.slug}/`}>
+              <div class="pf-card-top">
+                <span class="pf-num" aria-hidden="true">{p.data.num}</span>
+                <div class="pf-card-head">
+                  <h2 class="pf-card-title">{p.data.title}</h2>
+                  <div class="pf-card-cat" set:html={p.data.cat} />
+                </div>
+                {isNew(p.slug) && <span class="pf-flag">可交互演示</span>}
+              </div>
+
+              <p class="pf-card-summary">{p.data.summary}</p>
+
+              {p.data.metrics.length > 0 && (
+                <div class="pf-metrics">
+                  {p.data.metrics.map((m) => (
+                    <span class="pf-metric">
+                      <b>{m.value}</b>
+                      <i>{m.label}</i>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div class="pf-tech">
+                {p.data.tech.map((t) => (
+                  <span>{t}</span>
+                ))}
+              </div>
+
+              <span class="pf-more">查看案例详情 →</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <footer class="pf-foot">
+      <p>
+        更多工程记录与实践复盘见
+        <a href="/ai">AI·技术</a>
+        栏目；简历与联系方式见 <a href="/about">关于</a>。
+      </p>
+    </footer>
+  </div>
+</PageLayout>
+
+<style>
+  .pf {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 24px 120px;
+  }
+
+  .pf-head {
+    max-width: 660px;
+  }
+  .pf-title {
+    margin-top: 18px;
+    font-family: var(--font-heading);
+    font-size: clamp(30px, 5.2vw, 54px);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .pf-lead {
+    margin-top: 16px;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--ink-soft);
+  }
+
+  .pf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .pf-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: 1px solid rgba(27, 25, 18, 0.16);
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--ink);
+    font-family: var(--font-kanit);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    transition: transform 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
+  }
+  .pf-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(27, 25, 18, 0.3);
+  }
+  .pf-btn--primary {
+    background: var(--firefly);
+    border-color: rgba(27, 25, 18, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .pf-list {
+    display: grid;
+    gap: 18px;
+    margin: 44px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pf-card {
+    display: block;
+    padding: 26px 26px 22px;
+    border: 1px solid rgba(27, 25, 18, 0.1);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.5s var(--ease-out), border-color 0.5s var(--ease-out);
+  }
+  .pf-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(27, 25, 18, 0.22);
+  }
+
+  .pf-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .pf-num {
+    font-family: var(--font-kanit);
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(27, 25, 18, 0.16);
+    flex-shrink: 0;
+  }
+  .pf-card-head {
+    flex: 1;
+    min-width: 0;
+  }
+  .pf-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .pf-card-cat {
+    margin-top: 4px;
+    font-family: var(--font-kanit);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .pf-card-cat :global(b) {
+    color: var(--firefly-deep);
+    font-weight: 600;
+  }
+  .pf-flag {
+    flex-shrink: 0;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: var(--firefly);
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .pf-card-summary {
+    margin-top: 14px;
+    font-size: 13.5px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--ink-soft);
+  }
+
+  .pf-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: rgba(244, 240, 229, 0.7);
+    border: 1px solid rgba(27, 25, 18, 0.06);
+  }
+  .pf-metric {
+    display: flex;
+    flex-direction: column;
+  }
+  .pf-metric b {
+    font-family: var(--font-kanit);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--firefly-deep);
+  }
+  .pf-metric i {
+    margin-top: 3px;
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+
+  .pf-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 16px;
+  }
+  .pf-tech span {
+    padding: 4px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(27, 25, 18, 0.12);
+    background: rgba(255, 255, 255, 0.6);
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+  }
+
+  .pf-more {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: var(--font-kanit);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--firefly-deep);
+  }
+
+  .pf-foot {
+    margin-top: 40px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(27, 25, 18, 0.1);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .pf-foot a {
+    color: var(--firefly-deep);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(78, 112, 0, 0.3);
+  }
+</style>

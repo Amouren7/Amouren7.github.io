@@ -19,6 +19,9 @@ preview:
   src: /images/projects/rag-agent-demo.svg
   alt: RAG 知识问答的脱敏示意界面，问题、回答和引用来源均为合成示例
   caption: 问答界面 · 合成数据
+links:
+  demo: https://amouren7.github.io/demo/rrf/
+  github: https://github.com/Amouren7/Amou_rag_project
 featured: true
 draft: false
 ---
